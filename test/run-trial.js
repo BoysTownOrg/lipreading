@@ -3,6 +3,7 @@ function runTrial(videoPlayer, images) {
     videoPlayer.hide();
     images.show();
   });
+  videoPlayer.show();
   videoPlayer.play();
 }
 
@@ -12,6 +13,7 @@ class VideoStub {
   constructor() {
     this.played = false;
     this.hidden = false;
+    this.shown = false;
     this.onFinish = () => {};
   }
 
@@ -21,6 +23,10 @@ class VideoStub {
 
   play() {
     this.played = true;
+  }
+
+  show() {
+    this.shown = true;
   }
 
   hide() {
@@ -46,6 +52,12 @@ function test(assertion) {
 }
 
 describe("runTrial()", () => {
+  it("should show the video", () => {
+    test((video) => {
+      assert.equal(video.shown, true);
+    });
+  });
+
   it("should play the video", () => {
     test((video) => {
       assert.equal(video.played, true);
