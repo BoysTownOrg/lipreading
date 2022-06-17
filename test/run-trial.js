@@ -1,13 +1,5 @@
-function runTrial(videoPlayer, images) {
-  videoPlayer.setOnFinish(() => {
-    videoPlayer.hide();
-    images.show();
-  });
-  videoPlayer.show();
-  videoPlayer.play();
-}
-
 import assert from "assert";
+import { runTrial } from "../run-trial.js";
 
 class VideoStub {
   constructor() {
