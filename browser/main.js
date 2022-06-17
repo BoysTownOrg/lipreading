@@ -1,4 +1,16 @@
+import { runTest } from "../run-test.js";
 import { runTrial } from "../run-trial.js";
+
+class Trials {
+  constructor(video, images) {
+    this.video = video;
+    this.images = images;
+  }
+
+  runNext() {
+    runTrial(this.video, this.images);
+  }
+}
 
 function hideElement(element) {
   element.style.visibility = "hidden";
@@ -6,6 +18,26 @@ function hideElement(element) {
 
 function showElement(element) {
   element.style.visibility = "visible";
+}
+
+class Button {
+  constructor(buttonElement) {
+    this.buttonElement = buttonElement;
+  }
+
+  setOnClick(f) {
+    this.buttonElement.onclick = () => {
+      f();
+    };
+  }
+
+  show() {
+    showElement(this.buttonElement);
+  }
+
+  hide() {
+    hideElement(this.buttonElement);
+  }
 }
 
 class Video {
@@ -96,11 +128,17 @@ centerElementAtPercentage(videoElement, 50, 50);
 hideElement(videoElement);
 videoElement.src = "video.ogv";
 
+const buttonElement = document.createElement("button");
+fixElementPosition(buttonElement);
+centerElementAtPercentage(buttonElement, 50, 50);
+buttonElement.textContent = "start";
+
 document.body.appendChild(topLeftImage);
 document.body.appendChild(topRightImage);
 document.body.appendChild(bottomLeftImage);
 document.body.appendChild(bottomRightImage);
 document.body.appendChild(videoElement);
+document.body.appendChild(buttonElement);
 
 const video = new Video(videoElement);
 const images = new Images([
@@ -109,12 +147,6 @@ const images = new Images([
   bottomLeftImage,
   bottomRightImage,
 ]);
-
-const button = document.createElement("button");
-fixElementPosition(button);
-centerElementAtPercentage(button, 50, 50);
-button.textContent = "start";
-button.onclick = () => {
-  runTrial(video, images);
-};
-document.body.appendChild(button);
+const trials = new Trials(video, images);
+const startButton = new Button(buttonElement);
+runTest(startButton, trials);
