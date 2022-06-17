@@ -1,11 +1,11 @@
-export function runTrial(videoPlayer, images) {
-  videoPlayer.setOnFinish(() => {
-    videoPlayer.hide();
+export function runTrial(video, images) {
+  video.setOnFinish(() => {
+    video.hide();
     images.setOnTouch(() => {
       images.hide();
     });
     images.show();
   });
-  videoPlayer.show();
-  videoPlayer.play();
+  video.show();
+  video.play();
 }
