@@ -29,10 +29,20 @@ class VideoStub {
 class ImagesStub {
   constructor() {
     this.shown = false;
+    this.hidden = false;
+    this.onTouch = () => {};
+  }
+
+  setOnTouch(f) {
+    this.onTouch = f;
   }
 
   show() {
     this.shown = true;
+  }
+
+  hide() {
+    this.hidden = true;
   }
 }
 
@@ -69,6 +79,15 @@ describe("runTrial()", () => {
       assert.equal(images.shown, false);
       video.onFinish();
       assert.equal(images.shown, true);
+    });
+  });
+
+  it("should hide the images when touched", () => {
+    test((video, images) => {
+      assert.equal(images.hidden, false);
+      video.onFinish();
+      images.onTouch();
+      assert.equal(images.hidden, true);
     });
   });
 });
