@@ -84,8 +84,8 @@ describe("runTrial()", () => {
 
   it("should hide the images when touched", () => {
     test((video, images) => {
-      assert.equal(images.hidden, false);
       video.onFinish();
+      assert.equal(images.hidden, false);
       images.onTouch();
       assert.equal(images.hidden, true);
     });
