@@ -8,7 +8,7 @@ function runTrial(videoPlayer, images) {
 
 import assert from "assert";
 
-class VideoPlayerStub {
+class VideoStub {
   constructor() {
     this.played = false;
     this.hidden = false;
@@ -38,29 +38,33 @@ class ImagesStub {
   }
 }
 
+function test(assertion) {
+  const video = new VideoStub();
+  const images = new ImagesStub();
+  runTrial(video, images);
+  assertion(video, images);
+}
+
 describe("runTrial()", () => {
   it("should play the video", () => {
-    const videoPlayer = new VideoPlayerStub();
-    const images = new ImagesStub();
-    runTrial(videoPlayer, images);
-    assert.equal(videoPlayer.played, true);
+    test((video) => {
+      assert.equal(video.played, true);
+    });
   });
 
   it("should hide the video when finished", () => {
-    const videoPlayer = new VideoPlayerStub();
-    const images = new ImagesStub();
-    runTrial(videoPlayer, images);
-    assert.equal(videoPlayer.hidden, false);
-    videoPlayer.onFinish();
-    assert.equal(videoPlayer.hidden, true);
+    test((video) => {
+      assert.equal(video.hidden, false);
+      video.onFinish();
+      assert.equal(video.hidden, true);
+    });
   });
 
   it("should show the images when video finished", () => {
-    const videoPlayer = new VideoPlayerStub();
-    const images = new ImagesStub();
-    runTrial(videoPlayer, images);
-    assert.equal(images.shown, false);
-    videoPlayer.onFinish();
-    assert.equal(images.shown, true);
+    test((video, images) => {
+      assert.equal(images.shown, false);
+      video.onFinish();
+      assert.equal(images.shown, true);
+    });
   });
 });
