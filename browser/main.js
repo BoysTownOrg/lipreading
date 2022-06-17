@@ -1,12 +1,20 @@
 import { runTrial } from "../run-trial.js";
 
+function hideElement(element) {
+  element.style.visibility = "hidden";
+}
+
+function showElement(element) {
+  element.style.visibility = "visible";
+}
+
 class Video {
   constructor(videoElement) {
     this.videoElement = videoElement;
   }
 
   setOnFinish(f) {
-    this.videoElement.onended = (event) => {
+    this.videoElement.onended = () => {
       f();
     };
   }
@@ -16,11 +24,11 @@ class Video {
   }
 
   show() {
-    this.videoElement.style.visibility = "visible";
+    showElement(this.videoElement);
   }
 
   hide() {
-    this.videoElement.style.visibility = "hidden";
+    hideElement(this.videoElement);
   }
 }
 
@@ -31,22 +39,18 @@ class Images {
 
   setOnTouch(f) {
     this.imageElements.forEach((element) => {
-      element.onclick = (event) => {
+      element.onclick = () => {
         f();
       };
     });
   }
 
   show() {
-    this.imageElements.forEach(
-      (element) => (element.style.visibility = "visible")
-    );
+    this.imageElements.forEach((element) => showElement(element));
   }
 
   hide() {
-    this.imageElements.forEach(
-      (element) => (element.style.visibility = "hidden")
-    );
+    this.imageElements.forEach((element) => hideElement(element));
   }
 }
 
@@ -56,12 +60,16 @@ function centerElementAtPercentage(element, x, y) {
   element.style.transform = "translate(-50%, -50%)";
 }
 
+function fixElementPosition(element) {
+  element.style.position = "fixed";
+}
+
 function quadrantImage() {
   const image = new Image();
-  image.style.position = "fixed";
+  fixElementPosition(image);
   image.style.maxWidth = "50%";
   image.style.maxHeight = "50%";
-  image.style.visibility = "hidden";
+  hideElement(image);
   return image;
 }
 
@@ -83,9 +91,9 @@ bottomLeftImage.src = "c.jpg";
 bottomRightImage.src = "d.jpg";
 
 const videoElement = document.createElement("video");
-videoElement.style.position = "fixed";
+fixElementPosition(videoElement);
 centerElementAtPercentage(videoElement, 50, 50);
-videoElement.style.visibility = "hidden";
+hideElement(videoElement);
 videoElement.src = "video.ogv";
 
 document.body.appendChild(topLeftImage);
@@ -103,7 +111,7 @@ const images = new Images([
 ]);
 
 const button = document.createElement("button");
-button.style.position = "fixed";
+fixElementPosition(button);
 centerElementAtPercentage(button, 50, 50);
 button.textContent = "start";
 button.onclick = () => {
