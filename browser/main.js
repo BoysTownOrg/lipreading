@@ -1,14 +1,29 @@
 import { runTest } from "../run-test.js";
 import { runTrial } from "../run-trial.js";
 
+class TrialCompletionHandler {
+  constructor(trials) {
+    this.trials = trials;
+  }
+
+  call() {
+    this.trials.onNextCompletion();
+  }
+}
+
 class Trials {
   constructor(video, images) {
     this.video = video;
     this.images = images;
+    this.onNextCompletion = () => {};
   }
 
   runNext() {
-    runTrial(this.video, this.images);
+    runTrial(this.video, this.images, new TrialCompletionHandler(this));
+  }
+
+  setOnNextCompletion(f) {
+    this.onNextCompletion = f;
   }
 }
 
