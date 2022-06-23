@@ -76,11 +76,12 @@ describe("runTest()", () => {
     });
   });
 
-  it("runs next trial when trial completes", () => {
-    test((startButton, trials) => {
+  it("runs next trial when continue button touched", () => {
+    test((startButton, trials, continueButton) => {
       startButton.onClick();
-      trials.nextRun = false;
       trials.onNextCompletion();
+      trials.nextRun = false;
+      continueButton.onClick();
       assert.equal(trials.nextRun, true);
     });
   });
