@@ -1,5 +1,6 @@
-export function runTest(startButton, trials) {
+export function runTest(startButton, trials, continueButton) {
   trials.setOnNextCompletion(() => {
+    continueButton.show();
     trials.runNext();
   });
   startButton.setOnClick(() => {

@@ -39,8 +39,9 @@ class TrialsStub {
 function test(assertion) {
   const startButton = new ButtonStub();
   const trials = new TrialsStub();
-  runTest(startButton, trials);
-  assertion(startButton, trials);
+  const continueButton = new ButtonStub();
+  runTest(startButton, trials, continueButton);
+  assertion(startButton, trials, continueButton);
 }
 
 describe("runTest()", () => {
@@ -63,6 +64,15 @@ describe("runTest()", () => {
       assert.equal(trials.nextRun, false);
       startButton.onClick();
       assert.equal(trials.nextRun, true);
+    });
+  });
+
+  it("shows the continue button when trial completes", () => {
+    test((startButton, trials, continueButton) => {
+      startButton.onClick();
+      assert.equal(continueButton.shown, false);
+      trials.onNextCompletion();
+      assert.equal(continueButton.shown, true);
     });
   });
 
