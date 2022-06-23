@@ -24,10 +24,15 @@ class ButtonStub {
 class TrialsStub {
   constructor() {
     this.nextRun = false;
+    this.onNextCompletion = () => {};
   }
 
   runNext() {
     this.nextRun = true;
+  }
+
+  setOnNextCompletion(f) {
+    this.onNextCompletion = f;
   }
 }
 
@@ -57,6 +62,15 @@ describe("runTest()", () => {
     test((startButton, trials) => {
       assert.equal(trials.nextRun, false);
       startButton.onClick();
+      assert.equal(trials.nextRun, true);
+    });
+  });
+
+  it("runs next trial when trial completes", () => {
+    test((startButton, trials) => {
+      startButton.onClick();
+      trials.nextRun = false;
+      trials.onNextCompletion();
       assert.equal(trials.nextRun, true);
     });
   });
