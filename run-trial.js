@@ -1,10 +1,10 @@
 export function runTrial(video, images, completionHandler) {
+  images.setOnTouch(() => {
+    images.hide();
+    completionHandler.call();
+  });
   video.setOnFinish(() => {
     video.hide();
-    images.setOnTouch(() => {
-      images.hide();
-      completionHandler.call();
-    });
     images.show();
   });
   video.show();
