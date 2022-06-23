@@ -143,17 +143,25 @@ centerElementAtPercentage(videoElement, 50, 50);
 hideElement(videoElement);
 videoElement.src = "video.ogv";
 
-const buttonElement = document.createElement("button");
-fixElementPosition(buttonElement);
-centerElementAtPercentage(buttonElement, 50, 50);
-buttonElement.textContent = "start";
+const startButtonElement = document.createElement("button");
+fixElementPosition(startButtonElement);
+centerElementAtPercentage(startButtonElement, 50, 50);
+hideElement(startButtonElement);
+startButtonElement.textContent = "start";
+
+const continueButtonElement = document.createElement("button");
+fixElementPosition(continueButtonElement);
+centerElementAtPercentage(continueButtonElement, 50, 50);
+hideElement(continueButtonElement);
+continueButtonElement.textContent = "continue";
 
 document.body.appendChild(topLeftImage);
 document.body.appendChild(topRightImage);
 document.body.appendChild(bottomLeftImage);
 document.body.appendChild(bottomRightImage);
 document.body.appendChild(videoElement);
-document.body.appendChild(buttonElement);
+document.body.appendChild(startButtonElement);
+document.body.appendChild(continueButtonElement);
 
 const video = new Video(videoElement);
 const images = new Images([
@@ -163,5 +171,6 @@ const images = new Images([
   bottomRightImage,
 ]);
 const trials = new Trials(video, images);
-const startButton = new Button(buttonElement);
-runTest(startButton, trials);
+const startButton = new Button(startButtonElement);
+const continueButton = new Button(continueButtonElement);
+runTest(startButton, trials, continueButton);
