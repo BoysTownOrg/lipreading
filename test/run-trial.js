@@ -46,11 +46,22 @@ class ImagesStub {
   }
 }
 
+class HandlerStub {
+  constructor() {
+    this.called = false;
+  }
+
+  call() {
+    this.called = true;
+  }
+}
+
 function test(assertion) {
   const video = new VideoStub();
   const images = new ImagesStub();
-  runTrial(video, images);
-  assertion(video, images);
+  const completionHandler = new HandlerStub();
+  runTrial(video, images, completionHandler);
+  assertion(video, images, completionHandler);
 }
 
 describe("runTrial()", () => {
@@ -88,6 +99,15 @@ describe("runTrial()", () => {
       assert.equal(images.hidden, false);
       images.onTouch();
       assert.equal(images.hidden, true);
+    });
+  });
+
+  it("should notify when trial complete", () => {
+    test((video, images, completionHandler) => {
+      video.onFinish();
+      assert.equal(completionHandler.called, false);
+      images.onTouch();
+      assert.equal(completionHandler.called, true);
     });
   });
 });
