@@ -85,4 +85,14 @@ describe("runTest()", () => {
       assert.equal(trials.nextRun, true);
     });
   });
+
+  it("hides continue button when touched", () => {
+    test((startButton, trials, continueButton) => {
+      startButton.onClick();
+      trials.onNextCompletion();
+      assert.equal(continueButton.hidden, false);
+      continueButton.onClick();
+      assert.equal(continueButton.hidden, true);
+    });
+  });
 });

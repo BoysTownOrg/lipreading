@@ -3,6 +3,7 @@ export function runTest(startButton, trials, continueButton) {
     continueButton.show();
   });
   continueButton.setOnClick(() => {
+    continueButton.hide();
     trials.runNext();
   });
   startButton.setOnClick(() => {
