@@ -159,11 +159,15 @@ function quadrantImage() {
 
 const barContainingElement = document.createElement("div");
 barContainingElement.style.width = "75%";
+barContainingElement.style.height = "5%";
 barContainingElement.style.backgroundColor = "grey";
+fixElementPosition(barContainingElement);
+centerElementAtPercentage(barContainingElement, 50, 50);
 hideElement(barContainingElement);
 
 const barElement = document.createElement("div");
 barElement.style.backgroundColor = "green";
+barElement.style.height = "100%";
 hideElement(barElement);
 barContainingElement.appendChild(barElement);
 
@@ -213,13 +217,6 @@ document.body.appendChild(barContainingElement);
 
 const progressBar = new ProgressBar(barContainingElement, barElement);
 const stimuli = new Resources();
-preloadStimuli(stimuli, progressBar, [
-  "a.jpg",
-  "b.jpg",
-  "c.jpg",
-  "d.jpg",
-  "movie.ogv",
-]);
 const video = new Video(videoElement);
 const images = new Images([
   topLeftImage,
@@ -230,4 +227,11 @@ const images = new Images([
 const trials = new Trials(video, images);
 const startButton = new Button(startButtonElement);
 const continueButton = new Button(continueButtonElement);
-runTest(startButton, trials, continueButton);
+preloadStimuli(
+  stimuli,
+  progressBar,
+  ["a.jpg", "b.jpg", "c.jpg", "d.jpg", "movie.ogv"],
+  () => {
+    runTest(startButton, trials, continueButton);
+  }
+);
