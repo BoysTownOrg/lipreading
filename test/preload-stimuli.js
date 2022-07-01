@@ -32,28 +32,31 @@ class ProgressBarStub {
   }
 }
 
+function test(urls, assertion) {
+  const stimuli = new ResourcesStub();
+  const progressBar = new ProgressBarStub();
+  preloadStimuli(stimuli, progressBar, urls);
+  assertion(stimuli, progressBar);
+}
+
 describe("preloadStimuli()", () => {
   it("should load urls", () => {
-    const stimuli = new ResourcesStub();
-    const progressBar = new ProgressBarStub();
-    const urls = ["a.png", "b.mov", "c.jpg"];
-    preloadStimuli(stimuli, progressBar, urls);
-    assert.equal(stimuli.urls[0], "a.png");
-    assert.equal(stimuli.urls[1], "b.mov");
-    assert.equal(stimuli.urls[2], "c.jpg");
+    test(["a.png", "b.mov", "c.jpg"], (stimuli) => {
+      assert.equal(stimuli.urls[0], "a.png");
+      assert.equal(stimuli.urls[1], "b.mov");
+      assert.equal(stimuli.urls[2], "c.jpg");
+    });
   });
 
   it("should progressively update progress bar", () => {
-    const stimuli = new ResourcesStub();
-    const progressBar = new ProgressBarStub();
-    const urls = ["a.png", "b.mov", "c.jpg"];
-    preloadStimuli(stimuli, progressBar, urls);
-    stimuli.onFinishedLoadings[0]();
-    assert.equal(progressBar.widthPercent, 100 / 3);
-    stimuli.onFinishedLoadings[1]();
-    assert.equal(progressBar.widthPercent, 200 / 3);
-    stimuli.onFinishedLoadings[2]();
-    assert.equal(progressBar.widthPercent, 100);
+    test(["a.png", "b.mov", "c.jpg"], (stimuli, progressBar) => {
+      stimuli.onFinishedLoadings[0]();
+      assert.equal(progressBar.widthPercent, 100 / 3);
+      stimuli.onFinishedLoadings[1]();
+      assert.equal(progressBar.widthPercent, 200 / 3);
+      stimuli.onFinishedLoadings[2]();
+      assert.equal(progressBar.widthPercent, 100);
+    });
   });
 });
 
