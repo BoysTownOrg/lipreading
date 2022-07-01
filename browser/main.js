@@ -1,5 +1,50 @@
+import { preloadStimuli } from "../preload-stimuli.js";
 import { runTest } from "../run-test.js";
 import { runTrial } from "../run-trial.js";
+
+function hideElement(element) {
+  element.style.visibility = "hidden";
+}
+
+function showElement(element) {
+  element.style.visibility = "visible";
+}
+
+class Resources {
+  constructor() {
+    this.objectURLs = {};
+  }
+
+  load(url, onFinished) {
+    fetch(url)
+      .then((response) => response.blob())
+      .then((blob) => {
+        this.objectURLs[url] = URL.createObjectURL(blob);
+        onFinished();
+      });
+  }
+}
+
+class ProgressBar {
+  constructor(barContainingElement, barElement) {
+    this.barContainingElement = barContainingElement;
+    this.barElement = barElement;
+  }
+
+  update(widthPercent) {
+    this.barElement.style.width = `${widthPercent}%`;
+  }
+
+  show() {
+    showElement(this.barContainingElement);
+    showElement(this.barElement);
+  }
+
+  hide() {
+    hideElement(this.barElement);
+    hideElement(this.barContainingElement);
+  }
+}
 
 class TrialCompletionHandler {
   constructor(trials) {
@@ -25,14 +70,6 @@ class Trials {
   setOnNextCompletion(f) {
     this.onNextCompletion = f;
   }
-}
-
-function hideElement(element) {
-  element.style.visibility = "hidden";
-}
-
-function showElement(element) {
-  element.style.visibility = "visible";
 }
 
 class Button {
@@ -120,6 +157,16 @@ function quadrantImage() {
   return image;
 }
 
+const barContainingElement = document.createElement("div");
+barContainingElement.style.width = "75%";
+barContainingElement.style.backgroundColor = "grey";
+hideElement(barContainingElement);
+
+const barElement = document.createElement("div");
+barElement.style.backgroundColor = "green";
+hideElement(barElement);
+barContainingElement.appendChild(barElement);
+
 const topLeftImage = quadrantImage();
 centerElementAtPercentage(topLeftImage, 25, 25);
 
@@ -162,7 +209,17 @@ document.body.appendChild(bottomRightImage);
 document.body.appendChild(videoElement);
 document.body.appendChild(startButtonElement);
 document.body.appendChild(continueButtonElement);
+document.body.appendChild(barContainingElement);
 
+const progressBar = new ProgressBar(barContainingElement, barElement);
+const stimuli = new Resources();
+preloadStimuli(stimuli, progressBar, [
+  "a.jpg",
+  "b.jpg",
+  "c.jpg",
+  "d.jpg",
+  "movie.ogv",
+]);
 const video = new Video(videoElement);
 const images = new Images([
   topLeftImage,
