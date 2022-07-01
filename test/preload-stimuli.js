@@ -1,4 +1,6 @@
 function preloadStimuli(stimuli, progressBar, urls) {
+  progressBar.show();
+  progressBar.update(0);
   let completed = 0;
   urls.forEach((url) =>
     stimuli.load(url, () => {
@@ -25,10 +27,15 @@ class ResourcesStub {
 class ProgressBarStub {
   constructor() {
     this.widthPercent = -1;
+    this.shown = false;
   }
 
   update(widthPercent) {
     this.widthPercent = widthPercent;
+  }
+
+  show() {
+    this.shown = true;
   }
 }
 
@@ -40,6 +47,13 @@ function test(urls, assertion) {
 }
 
 describe("preloadStimuli()", () => {
+  it("should show initial progress bar", () => {
+    test(["a.png", "b.mov", "c.jpg"], (stimuli, progressBar) => {
+      assert.equal(progressBar.shown, true);
+      assert.equal(progressBar.widthPercent, 0);
+    });
+  });
+
   it("should load urls", () => {
     test(["a.png", "b.mov", "c.jpg"], (stimuli) => {
       assert.equal(stimuli.urls[0], "a.png");
