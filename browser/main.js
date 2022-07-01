@@ -10,6 +10,10 @@ function showElement(element) {
   element.style.visibility = "visible";
 }
 
+function percentString(n) {
+  return `${n}%`;
+}
+
 class Resources {
   constructor() {
     this.objectURLs = {};
@@ -141,7 +145,9 @@ class Images {
 function centerElementAtPercentage(element, x, y) {
   element.style.left = `${x}%`;
   element.style.top = `${y}%`;
-  element.style.transform = "translate(-50%, -50%)";
+  element.style.transform = `translate(${percentString(-50)}, ${percentString(
+    -50
+  )})`;
 }
 
 function fixElementPosition(element) {
@@ -151,15 +157,15 @@ function fixElementPosition(element) {
 function quadrantImage() {
   const image = new Image();
   fixElementPosition(image);
-  image.style.maxWidth = "50%";
-  image.style.maxHeight = "50%";
+  image.style.maxWidth = percentString(50);
+  image.style.maxHeight = percentString(50);
   hideElement(image);
   return image;
 }
 
 const barContainingElement = document.createElement("div");
-barContainingElement.style.width = "75%";
-barContainingElement.style.height = "5%";
+barContainingElement.style.width = percentString(75);
+barContainingElement.style.height = percentString(5);
 barContainingElement.style.backgroundColor = "grey";
 fixElementPosition(barContainingElement);
 centerElementAtPercentage(barContainingElement, 50, 50);
@@ -167,7 +173,7 @@ hideElement(barContainingElement);
 
 const barElement = document.createElement("div");
 barElement.style.backgroundColor = "green";
-barElement.style.height = "100%";
+barElement.style.height = percentString(100);
 hideElement(barElement);
 barContainingElement.appendChild(barElement);
 
