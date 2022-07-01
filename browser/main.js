@@ -88,9 +88,7 @@ class Images {
   }
 
   setOnTouch(f) {
-    this.imageElements.forEach((element) => {
-      element.onclick = () => f();
-    });
+    this.imageElements.forEach((element) => (element.onclick = () => f()));
   }
 
   show() {
