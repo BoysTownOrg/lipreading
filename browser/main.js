@@ -60,51 +60,13 @@ class TrialCompletionHandler {
   }
 }
 
-class Trials {
-  constructor(video, images) {
-    this.video = video;
-    this.images = images;
-    this.onNextCompletion = () => {};
-  }
-
-  runNext() {
-    runTrial(this.video, this.images, new TrialCompletionHandler(this));
-  }
-
-  setOnNextCompletion(f) {
-    this.onNextCompletion = f;
-  }
-}
-
-class Button {
-  constructor(buttonElement) {
-    this.buttonElement = buttonElement;
-  }
-
-  setOnClick(f) {
-    this.buttonElement.onclick = () => {
-      f();
-    };
-  }
-
-  show() {
-    showElement(this.buttonElement);
-  }
-
-  hide() {
-    hideElement(this.buttonElement);
-  }
-}
-
 class Video {
   constructor(videoElement) {
     this.videoElement = videoElement;
   }
 
   setOnFinish(f) {
-    this.videoElement.onended = () => {
-      f();
-    };
+    this.videoElement.onended = () => f();
   }
 
   play() {
@@ -127,9 +89,7 @@ class Images {
 
   setOnTouch(f) {
     this.imageElements.forEach((element) => {
-      element.onclick = () => {
-        f();
-      };
+      element.onclick = () => f();
     });
   }
 
@@ -139,6 +99,72 @@ class Images {
 
   hide() {
     this.imageElements.forEach((element) => hideElement(element));
+  }
+}
+
+class Trials {
+  constructor(
+    topLeftImage,
+    topRightImage,
+    bottomLeftImage,
+    bottomRightImage,
+    videoElement,
+    stimuli,
+    urls
+  ) {
+    this.topLeftImage = topLeftImage;
+    this.topRightImage = topRightImage;
+    this.bottomLeftImage = bottomLeftImage;
+    this.bottomRightImage = bottomRightImage;
+    this.videoElement = videoElement;
+    this.stimuli = stimuli;
+    this.urls = urls;
+    this.onNextCompletion = () => {};
+  }
+
+  runNext() {
+    const urls = this.urls.shift();
+    this.topLeftImage.src = this.stimuli.objectURLs[urls.image.topLeft];
+    this.topRightImage.src = this.stimuli.objectURLs[urls.image.topRight];
+    this.bottomLeftImage.src = this.stimuli.objectURLs[urls.image.bottomLeft];
+    this.bottomRightImage.src = this.stimuli.objectURLs[urls.image.bottomRight];
+    this.videoElement.src = this.stimuli.objectURLs[urls.video];
+    runTrial(
+      new Video(this.videoElement),
+      new Images([
+        this.topLeftImage,
+        this.topRightImage,
+        this.bottomLeftImage,
+        this.bottomRightImage,
+      ]),
+      new TrialCompletionHandler(this)
+    );
+  }
+
+  setOnNextCompletion(f) {
+    this.onNextCompletion = f;
+  }
+
+  completed() {
+    return this.urls.length === 0;
+  }
+}
+
+class Button {
+  constructor(buttonElement) {
+    this.buttonElement = buttonElement;
+  }
+
+  setOnClick(f) {
+    this.buttonElement.onclick = () => f();
+  }
+
+  show() {
+    showElement(this.buttonElement);
+  }
+
+  hide() {
+    hideElement(this.buttonElement);
   }
 }
 
@@ -215,21 +241,10 @@ document.body.appendChild(startButtonElement);
 document.body.appendChild(continueButtonElement);
 document.body.appendChild(barContainingElement);
 
-const progressBar = new ProgressBar(barContainingElement, barElement);
 const stimuli = new Resources();
-const video = new Video(videoElement);
-const images = new Images([
-  topLeftImage,
-  topRightImage,
-  bottomLeftImage,
-  bottomRightImage,
-]);
-const trials = new Trials(video, images);
-const startButton = new Button(startButtonElement);
-const continueButton = new Button(continueButtonElement);
 preloadStimuli(
   stimuli,
-  progressBar,
+  new ProgressBar(barContainingElement, barElement),
   [
     "a.jpg",
     "b.jpg",
@@ -242,12 +257,37 @@ preloadStimuli(
     "a.webm",
     "video.ogv",
   ],
-  () => {
-    topLeftImage.src = stimuli.objectURLs["a.jpg"];
-    topRightImage.src = stimuli.objectURLs["b.jpg"];
-    bottomLeftImage.src = stimuli.objectURLs["c.jpg"];
-    bottomRightImage.src = stimuli.objectURLs["d.jpg"];
-    videoElement.src = stimuli.objectURLs["video.ogv"];
-    runTest(startButton, trials, continueButton);
-  }
+  () =>
+    runTest(
+      new Button(startButtonElement),
+      new Trials(
+        topLeftImage,
+        topRightImage,
+        bottomLeftImage,
+        bottomRightImage,
+        videoElement,
+        stimuli,
+        [
+          {
+            image: {
+              topLeft: "a.jpg",
+              topRight: "b.jpg",
+              bottomLeft: "c.jpg",
+              bottomRight: "d.jpg",
+            },
+            video: "video.ogv",
+          },
+          {
+            image: {
+              topLeft: "e.jpg",
+              topRight: "f.jpg",
+              bottomLeft: "g.jpg",
+              bottomRight: "h.jpg",
+            },
+            video: "a.webm",
+          },
+        ]
+      ),
+      new Button(continueButtonElement)
+    )
 );
