@@ -1,6 +1,7 @@
 export function runTest(startButton, trials, continueButton) {
   trials.setOnNextCompletion(() => {
-    continueButton.show();
+    if (trials.completed());
+    else continueButton.show();
   });
   continueButton.setOnClick(() => {
     continueButton.hide();

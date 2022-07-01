@@ -24,6 +24,7 @@ class ButtonStub {
 class TrialsStub {
   constructor() {
     this.nextRun = false;
+    this.hasCompleted = false;
     this.onNextCompletion = () => {};
   }
 
@@ -33,6 +34,10 @@ class TrialsStub {
 
   setOnNextCompletion(f) {
     this.onNextCompletion = f;
+  }
+
+  completed() {
+    return this.hasCompleted;
   }
 }
 
@@ -73,6 +78,16 @@ describe("runTest()", () => {
       assert.equal(continueButton.shown, false);
       trials.onNextCompletion();
       assert.equal(continueButton.shown, true);
+    });
+  });
+
+  it("does not show the continue button when final trial completes", () => {
+    test((startButton, trials, continueButton) => {
+      startButton.onClick();
+      assert.equal(continueButton.shown, false);
+      trials.hasCompleted = true;
+      trials.onNextCompletion();
+      assert.equal(continueButton.shown, false);
     });
   });
 

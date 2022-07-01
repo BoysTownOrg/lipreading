@@ -230,7 +230,18 @@ const continueButton = new Button(continueButtonElement);
 preloadStimuli(
   stimuli,
   progressBar,
-  ["a.jpg", "b.jpg", "c.jpg", "d.jpg", "video.ogv"],
+  [
+    "a.jpg",
+    "b.jpg",
+    "c.jpg",
+    "d.jpg",
+    "e.jpg",
+    "f.jpg",
+    "g.jpg",
+    "h.jpg",
+    "a.webm",
+    "video.ogv",
+  ],
   () => {
     topLeftImage.src = stimuli.objectURLs["a.jpg"];
     topRightImage.src = stimuli.objectURLs["b.jpg"];
