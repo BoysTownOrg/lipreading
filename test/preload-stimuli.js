@@ -6,6 +6,7 @@ function preloadStimuli(stimuli, progressBar, urls) {
     stimuli.load(url, () => {
       progressBar.update(((completed + 1) * 100) / urls.length);
       completed += 1;
+      if (completed === urls.length) progressBar.hide();
     })
   );
 }
@@ -28,6 +29,7 @@ class ProgressBarStub {
   constructor() {
     this.widthPercent = -1;
     this.shown = false;
+    this.hidden = false;
   }
 
   update(widthPercent) {
@@ -36,6 +38,10 @@ class ProgressBarStub {
 
   show() {
     this.shown = true;
+  }
+
+  hide() {
+    this.hidden = true;
   }
 }
 
@@ -70,6 +76,16 @@ describe("preloadStimuli()", () => {
       assert.equal(progressBar.widthPercent, 200 / 3);
       stimuli.onFinishedLoadings[2]();
       assert.equal(progressBar.widthPercent, 100);
+    });
+  });
+
+  it("should hide progress bar once finished", () => {
+    test(["a.png", "b.mov", "c.jpg"], (stimuli, progressBar) => {
+      stimuli.onFinishedLoadings[0]();
+      stimuli.onFinishedLoadings[1]();
+      assert.equal(progressBar.hidden, false);
+      stimuli.onFinishedLoadings[2]();
+      assert.equal(progressBar.hidden, true);
     });
   });
 });
