@@ -183,16 +183,10 @@ centerElementAtPercentage(bottomLeftImage, 25, 75);
 const bottomRightImage = quadrantImage();
 centerElementAtPercentage(bottomRightImage, 75, 75);
 
-topLeftImage.src = "a.jpg";
-topRightImage.src = "b.jpg";
-bottomLeftImage.src = "c.jpg";
-bottomRightImage.src = "d.jpg";
-
 const videoElement = document.createElement("video");
 fixElementPosition(videoElement);
 centerElementAtPercentage(videoElement, 50, 50);
 hideElement(videoElement);
-videoElement.src = "video.ogv";
 
 const startButtonElement = document.createElement("button");
 fixElementPosition(startButtonElement);
@@ -230,8 +224,13 @@ const continueButton = new Button(continueButtonElement);
 preloadStimuli(
   stimuli,
   progressBar,
-  ["a.jpg", "b.jpg", "c.jpg", "d.jpg", "movie.ogv"],
+  ["a.jpg", "b.jpg", "c.jpg", "d.jpg", "video.ogv"],
   () => {
+    topLeftImage.src = stimuli.objectURLs["a.jpg"];
+    topRightImage.src = stimuli.objectURLs["b.jpg"];
+    bottomLeftImage.src = stimuli.objectURLs["c.jpg"];
+    bottomRightImage.src = stimuli.objectURLs["d.jpg"];
+    videoElement.src = stimuli.objectURLs["video.ogv"];
     runTest(startButton, trials, continueButton);
   }
 );
