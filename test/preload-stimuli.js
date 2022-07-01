@@ -1,17 +1,5 @@
-function preloadStimuli(stimuli, progressBar, urls) {
-  progressBar.show();
-  progressBar.update(0);
-  let completed = 0;
-  urls.forEach((url) =>
-    stimuli.load(url, () => {
-      progressBar.update(((completed + 1) * 100) / urls.length);
-      completed += 1;
-      if (completed === urls.length) progressBar.hide();
-    })
-  );
-}
-
 import assert from "assert";
+import { preloadStimuli } from "../preload-stimuli.js";
 
 class ResourcesStub {
   constructor() {
@@ -89,12 +77,3 @@ describe("preloadStimuli()", () => {
     });
   });
 });
-
-/*
- * fetch(url)
- * .then(response => response.blob())
- * .then(blob => {
- *   this.objectURLs[url] = URL.createObjectURL(blob);
- *   this.onLoadOne();
- * });
- */
