@@ -243,66 +243,69 @@ document.body.appendChild(continueButtonElement);
 document.body.appendChild(barContainingElement);
 
 const stimuli = new Resources();
-preloadStimuli(
-  stimuli,
-  new ProgressBar(barContainingElement, barElement),
-  [
-    "bag.mp4",
-    "ball.mp4",
-    "bath.mp4",
-    "bag.jpg",
-    "ball.jpg",
-    "bath.jpg",
-    "bed.jpg",
-    "bird.jpg",
-    "cake.jpg",
-    "fish.jpg",
-    "foot.jpg",
-    "green.jpg",
-    "gum.jpg",
-    "hand.jpg",
-    "kick.jpg",
-  ],
-  () =>
-    runTest(
-      new Button(startButtonElement),
-      new Trials(
-        topLeftImage,
-        topRightImage,
-        bottomLeftImage,
-        bottomRightImage,
-        videoElement,
-        stimuli,
-        [
-          {
-            image: {
-              topLeft: "bag.jpg",
-              topRight: "bed.jpg",
-              bottomLeft: "bird.jpg",
-              bottomRight: "cake.jpg",
+jatos.onLoad(() => {
+  preloadStimuli(
+    stimuli,
+    new ProgressBar(barContainingElement, barElement),
+    [
+      "bag.mp4",
+      "ball.mp4",
+      "bath.mp4",
+      "bag.jpg",
+      "ball.jpg",
+      "bath.jpg",
+      "bed.jpg",
+      "bird.jpg",
+      "cake.jpg",
+      "fish.jpg",
+      "foot.jpg",
+      "green.jpg",
+      "gum.jpg",
+      "hand.jpg",
+      "kick.jpg",
+    ],
+    () =>
+      runTest(
+        new Button(startButtonElement),
+        new Trials(
+          topLeftImage,
+          topRightImage,
+          bottomLeftImage,
+          bottomRightImage,
+          videoElement,
+          stimuli,
+          [
+            {
+              image: {
+                topLeft: "bag.jpg",
+                topRight: "bed.jpg",
+                bottomLeft: "bird.jpg",
+                bottomRight: "cake.jpg",
+              },
+              video: "bag.mp4",
             },
-            video: "bag.mp4",
-          },
-          {
-            image: {
-              topLeft: "fish.jpg",
-              topRight: "ball.jpg",
-              bottomLeft: "foot.jpg",
-              bottomRight: "green.jpg",
+            {
+              image: {
+                topLeft: "fish.jpg",
+                topRight: "ball.jpg",
+                bottomLeft: "foot.jpg",
+                bottomRight: "green.jpg",
+              },
+              video: "ball.mp4",
             },
-            video: "ball.mp4",
-          },
-          {
-            image: {
-              topLeft: "gum.jpg",
-              topRight: "hand.jpg",
-              bottomLeft: "bath.jpg",
-              bottomRight: "kick.jpg",
+            {
+              image: {
+                topLeft: "gum.jpg",
+                topRight: "hand.jpg",
+                bottomLeft: "bath.jpg",
+                bottomRight: "kick.jpg",
+              },
+              video: "bath.mp4",
             },
-            video: "bath.mp4",
-          },
-        ]
-      ),
-      new Button(continueButtonElement)
-    )
-);
+          ]
+        ),
+        new Button(continueButtonElement),
+        () => jatos.endStudy()
+      )
+  );
+});
