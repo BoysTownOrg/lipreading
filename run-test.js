@@ -1,6 +1,6 @@
-export function runTest(startButton, trials, continueButton) {
+export function runTest(startButton, trials, continueButton, onFinished) {
   trials.setOnNextCompletion(() => {
-    if (trials.completed());
+    if (trials.completed()) onFinished();
     else continueButton.show();
   });
   continueButton.setOnClick(() => {

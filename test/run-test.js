@@ -41,11 +41,11 @@ class TrialsStub {
   }
 }
 
-function test(assertion) {
+function test(assertion, onFinished = () => {}) {
   const startButton = new ButtonStub();
   const trials = new TrialsStub();
   const continueButton = new ButtonStub();
-  runTest(startButton, trials, continueButton);
+  runTest(startButton, trials, continueButton, onFinished);
   assertion(startButton, trials, continueButton);
 }
 
@@ -109,5 +109,19 @@ describe("runTest()", () => {
       continueButton.onClick();
       assert.equal(continueButton.hidden, true);
     });
+  });
+
+  it("runs completion handler when final trial completes", () => {
+    let finished = false;
+    test(
+      (startButton, trials) => {
+        startButton.onClick();
+        trials.hasCompleted = true;
+        assert.equal(finished, false);
+        trials.onNextCompletion();
+        assert.equal(finished, true);
+      },
+      () => (finished = true)
+    );
   });
 });
