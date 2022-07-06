@@ -214,6 +214,9 @@ const bottomRightImage = quadrantImage();
 centerElementAtPercentage(bottomRightImage, 75, 75);
 
 const videoElement = document.createElement("video");
+videoElement.muted = true;
+videoElement.style.width = percentString(100);
+videoElement.style.height = percentString(100);
 fixElementPosition(videoElement);
 centerElementAtPercentage(videoElement, 50, 50);
 hideElement(videoElement);
