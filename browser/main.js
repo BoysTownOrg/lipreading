@@ -83,7 +83,8 @@ class Video {
 }
 
 class Images {
-  constructor(imageElements) {
+  constructor(imageContainers, imageElements) {
+    this.imageContainers = imageContainers;
     this.imageElements = imageElements;
   }
 
@@ -92,16 +93,17 @@ class Images {
   }
 
   show() {
-    this.imageElements.forEach((element) => showElement(element));
+    this.imageContainers.forEach((element) => showElement(element));
   }
 
   hide() {
-    this.imageElements.forEach((element) => hideElement(element));
+    this.imageContainers.forEach((element) => hideElement(element));
   }
 }
 
 class Trials {
   constructor(
+    imageContainers,
     topLeftImage,
     topRightImage,
     bottomLeftImage,
@@ -110,6 +112,7 @@ class Trials {
     stimuli,
     urls
   ) {
+    this.imageContainers = imageContainers;
     this.topLeftImage = topLeftImage;
     this.topRightImage = topRightImage;
     this.bottomLeftImage = bottomLeftImage;
@@ -129,7 +132,7 @@ class Trials {
     this.videoElement.src = this.stimuli.objectURLs[urls.video];
     runTrial(
       new Video(this.videoElement),
-      new Images([
+      new Images(this.imageContainers, [
         this.topLeftImage,
         this.topRightImage,
         this.bottomLeftImage,
@@ -181,10 +184,20 @@ function fixElementPosition(element) {
 function quadrantImage() {
   const image = new Image();
   fixElementPosition(image);
-  image.style.maxWidth = percentString(50);
-  image.style.maxHeight = percentString(50);
-  hideElement(image);
+  centerElementAtPercentage(image, 50, 50);
+  image.style.maxWidth = percentString(75);
+  image.style.maxHeight = percentString(75);
   return image;
+}
+
+function quadrantDiv() {
+  const div = document.createElement("div");
+  fixElementPosition(div);
+  div.style.width = percentString(50);
+  div.style.height = percentString(50);
+  div.style.border = "1px solid black";
+  hideElement(div);
+  return div;
 }
 
 const barContainingElement = document.createElement("div");
@@ -201,17 +214,25 @@ barElement.style.height = percentString(100);
 hideElement(barElement);
 barContainingElement.appendChild(barElement);
 
+const topLeftQuadrant = quadrantDiv();
+centerElementAtPercentage(topLeftQuadrant, 25, 25);
 const topLeftImage = quadrantImage();
-centerElementAtPercentage(topLeftImage, 25, 25);
+topLeftQuadrant.appendChild(topLeftImage);
 
+const topRightQuadrant = quadrantDiv();
+centerElementAtPercentage(topRightQuadrant, 75, 25);
 const topRightImage = quadrantImage();
-centerElementAtPercentage(topRightImage, 75, 25);
+topRightQuadrant.appendChild(topRightImage);
 
+const bottomLeftQuadrant = quadrantDiv();
+centerElementAtPercentage(bottomLeftQuadrant, 25, 75);
 const bottomLeftImage = quadrantImage();
-centerElementAtPercentage(bottomLeftImage, 25, 75);
+bottomLeftQuadrant.appendChild(bottomLeftImage);
 
+const bottomRightQuadrant = quadrantDiv();
+centerElementAtPercentage(bottomRightQuadrant, 75, 75);
 const bottomRightImage = quadrantImage();
-centerElementAtPercentage(bottomRightImage, 75, 75);
+bottomRightQuadrant.appendChild(bottomRightImage);
 
 const videoElement = document.createElement("video");
 videoElement.muted = true;
@@ -233,10 +254,10 @@ centerElementAtPercentage(continueButtonElement, 50, 50);
 hideElement(continueButtonElement);
 continueButtonElement.textContent = "continue";
 
-document.body.appendChild(topLeftImage);
-document.body.appendChild(topRightImage);
-document.body.appendChild(bottomLeftImage);
-document.body.appendChild(bottomRightImage);
+document.body.appendChild(topLeftQuadrant);
+document.body.appendChild(topRightQuadrant);
+document.body.appendChild(bottomLeftQuadrant);
+document.body.appendChild(bottomRightQuadrant);
 document.body.appendChild(videoElement);
 document.body.appendChild(startButtonElement);
 document.body.appendChild(continueButtonElement);
@@ -268,6 +289,12 @@ jatos.onLoad(() => {
       runTest(
         new Button(startButtonElement),
         new Trials(
+          [
+            topLeftQuadrant,
+            topRightQuadrant,
+            bottomLeftQuadrant,
+            bottomRightQuadrant,
+          ],
           topLeftImage,
           topRightImage,
           bottomLeftImage,
