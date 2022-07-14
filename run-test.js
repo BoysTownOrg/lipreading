@@ -1,7 +1,18 @@
-export function runTest(startButton, trials, continueButton, onFinished) {
+export function runTest(
+  startButton,
+  trials,
+  continueButton,
+  timeStamp,
+  onFinished
+) {
   const results = [];
+  let startTimeMilliseconds = null;
   trials.setOnNextCompletion((result) => {
-    results.push(result);
+    results.push({
+      ...result,
+      elapsedTimeMilliseconds:
+        timeStamp.nowMilliseconds() - startTimeMilliseconds,
+    });
     if (trials.completed()) onFinished(results);
     else continueButton.show();
   });
@@ -10,6 +21,7 @@ export function runTest(startButton, trials, continueButton, onFinished) {
     trials.runNext();
   });
   startButton.setOnClick(() => {
+    startTimeMilliseconds = timeStamp.nowMilliseconds();
     startButton.hide();
     trials.runNext();
   });

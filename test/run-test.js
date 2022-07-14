@@ -41,8 +41,26 @@ class TrialsStub {
   }
 }
 
+class TimeStampStub {
+  constructor() {
+    this.nowMilliseconds_ = -1;
+  }
+
+  nowMilliseconds() {
+    return this.nowMilliseconds_;
+  }
+
+  setNowMilliseconds(ms) {
+    this.nowMilliseconds_ = ms;
+  }
+}
+
 function assertEqualTrialResult(actual, expected) {
   assert.equal(actual.selectedImageId, expected.selectedImageId);
+  assert.equal(
+    actual.elapsedTimeMilliseconds,
+    expected.elapsedTimeMilliseconds
+  );
 }
 
 function assertEqualTrialResults(actual, expected) {
@@ -55,8 +73,9 @@ function test(assertion, onFinished = () => {}) {
   const startButton = new ButtonStub();
   const trials = new TrialsStub();
   const continueButton = new ButtonStub();
-  runTest(startButton, trials, continueButton, onFinished);
-  assertion(startButton, trials, continueButton);
+  const timeStamp = new TimeStampStub();
+  runTest(startButton, trials, continueButton, timeStamp, onFinished);
+  assertion(startButton, trials, continueButton, timeStamp);
 }
 
 describe("runTest()", () => {
@@ -138,16 +157,20 @@ describe("runTest()", () => {
   it("passes trial results to completion handler", () => {
     let results = null;
     test(
-      (startButton, trials) => {
+      (startButton, trials, continueButton, timeStamp) => {
+        timeStamp.setNowMilliseconds(2);
         startButton.onClick();
+        timeStamp.setNowMilliseconds(7);
         trials.onNextCompletion({ selectedImageId: "a" });
+        timeStamp.setNowMilliseconds(23);
         trials.onNextCompletion({ selectedImageId: "g" });
+        timeStamp.setNowMilliseconds(67);
         trials.hasCompleted = true;
         trials.onNextCompletion({ selectedImageId: "e" });
         assertEqualTrialResults(results, [
-          { selectedImageId: "a" },
-          { selectedImageId: "g" },
-          { selectedImageId: "e" },
+          { selectedImageId: "a", elapsedTimeMilliseconds: 7 - 2 },
+          { selectedImageId: "g", elapsedTimeMilliseconds: 23 - 2 },
+          { selectedImageId: "e", elapsedTimeMilliseconds: 67 - 2 },
         ]);
       },
       (r) => (results = r)
