@@ -132,6 +132,7 @@ class Trials {
     this.bottomLeftImage.src = this.stimuli.objectURLs[urls.image.bottomLeft];
     this.bottomRightImage.src = this.stimuli.objectURLs[urls.image.bottomRight];
     this.videoElement.src = this.stimuli.objectURLs[urls.video];
+    this.videoElement.muted = true;
     runTrial(
       new Video(this.videoElement),
       new Images(this.imageContainers, [
@@ -237,7 +238,6 @@ const bottomRightImage = quadrantImage();
 bottomRightQuadrant.appendChild(bottomRightImage);
 
 const videoElement = document.createElement("video");
-videoElement.muted = true;
 videoElement.style.width = percentString(75);
 videoElement.style.height = percentString(75);
 fixElementPosition(videoElement);
