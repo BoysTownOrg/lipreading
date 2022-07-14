@@ -85,13 +85,19 @@ class Video {
 }
 
 class Images {
-  constructor(imageContainers, imageElements) {
+  constructor(imageContainers, imageElementsWithUrls, stimuli) {
     this.imageContainers = imageContainers;
-    this.imageElements = imageElements;
+    this.imageElementsWithUrls = imageElementsWithUrls;
+    this.imageElementsWithUrls.forEach((imageElementWithUrl) => {
+      imageElementWithUrl.element.src =
+        stimuli.objectURLs[imageElementWithUrl.url];
+    });
   }
 
   setOnTouch(f) {
-    this.imageElements.forEach((element) => (element.onclick = () => f()));
+    this.imageElementsWithUrls.forEach(
+      (imageElementWithUrl) => (imageElementWithUrl.element.onclick = () => f())
+    );
   }
 
   show() {
@@ -127,22 +133,20 @@ class Trials {
 
   runNext() {
     const trial = this.trials.shift();
-    this.topLeftImage.src = this.stimuli.objectURLs[trial.url.image.topLeft];
-    this.topRightImage.src = this.stimuli.objectURLs[trial.url.image.topRight];
-    this.bottomLeftImage.src =
-      this.stimuli.objectURLs[trial.url.image.bottomLeft];
-    this.bottomRightImage.src =
-      this.stimuli.objectURLs[trial.url.image.bottomRight];
     this.videoElement.src = this.stimuli.objectURLs[trial.url.video];
     this.videoElement.muted = trial.muted;
     runTrial(
       new Video(this.videoElement),
-      new Images(this.imageContainers, [
-        this.topLeftImage,
-        this.topRightImage,
-        this.bottomLeftImage,
-        this.bottomRightImage,
-      ]),
+      new Images(
+        this.imageContainers,
+        [
+          { element: this.topLeftImage, url: trial.url.image.topLeft },
+          { element: this.topRightImage, url: trial.url.image.topRight },
+          { element: this.bottomLeftImage, url: trial.url.image.bottomLeft },
+          { element: this.bottomRightImage, url: trial.url.image.bottomRight },
+        ],
+        this.stimuli
+      ),
       new TrialCompletionHandler(this)
     );
   }
