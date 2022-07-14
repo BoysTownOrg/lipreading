@@ -301,7 +301,7 @@ jatos.onLoad(() => {
               trials
             ),
             new Button(continueButtonElement),
-            () => jatos.endStudy()
+            (results) => jatos.endStudy(results)
           )
       );
     });
