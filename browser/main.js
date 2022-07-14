@@ -53,12 +53,16 @@ class ProgressBar {
 }
 
 class TrialCompletionHandler {
-  constructor(trials) {
+  constructor(trials, videoUrl) {
     this.trials = trials;
+    this.videoUrl = videoUrl;
   }
 
-  call(selectedImageId) {
-    this.trials.onNextCompletion({ selectedImageId });
+  call(selectedImageUrl) {
+    this.trials.onNextCompletion({
+      selectedImageUrl,
+      videoUrl: this.videoUrl,
+    });
   }
 }
 
@@ -148,7 +152,7 @@ class Trials {
         ],
         this.stimuli
       ),
-      new TrialCompletionHandler(this)
+      new TrialCompletionHandler(this, trial.url.video)
     );
   }
 
