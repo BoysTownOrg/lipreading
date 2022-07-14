@@ -58,7 +58,7 @@ class TrialCompletionHandler {
   }
 
   call(selectedImageId) {
-    this.trials.onNextCompletion();
+    this.trials.onNextCompletion({ selectedImageId });
   }
 }
 
