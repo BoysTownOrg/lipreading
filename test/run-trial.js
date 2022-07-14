@@ -49,10 +49,12 @@ class ImagesStub {
 class HandlerStub {
   constructor() {
     this.called = false;
+    this.passed = null;
   }
 
-  call() {
+  call(passed) {
     this.called = true;
+    this.passed = passed;
   }
 }
 
@@ -108,6 +110,14 @@ describe("runTrial()", () => {
       assert.equal(completionHandler.called, false);
       images.onTouch();
       assert.equal(completionHandler.called, true);
+    });
+  });
+
+  it("should pass selected image id to completion handler", () => {
+    test((video, images, completionHandler) => {
+      video.onFinish();
+      images.onTouch("abcxyz");
+      assert.equal(completionHandler.passed, "abcxyz");
     });
   });
 });
