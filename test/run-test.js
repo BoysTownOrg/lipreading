@@ -41,6 +41,16 @@ class TrialsStub {
   }
 }
 
+function assertEqualTrialResult(actual, expected) {
+  assert.equal(actual.selectedImageId, expected.selectedImageId);
+}
+
+function assertEqualTrialResults(actual, expected) {
+  assert.equal(actual.length, expected.length);
+  for (let i = 0; i < expected.length; i += 1)
+    assertEqualTrialResult(actual[i], expected[i]);
+}
+
 function test(assertion, onFinished = () => {}) {
   const startButton = new ButtonStub();
   const trials = new TrialsStub();
@@ -122,6 +132,25 @@ describe("runTest()", () => {
         assert.equal(finished, true);
       },
       () => (finished = true)
+    );
+  });
+
+  it("passes trial results to completion handler", () => {
+    let results = null;
+    test(
+      (startButton, trials) => {
+        startButton.onClick();
+        trials.onNextCompletion({ selectedImageId: "a" });
+        trials.onNextCompletion({ selectedImageId: "g" });
+        trials.hasCompleted = true;
+        trials.onNextCompletion({ selectedImageId: "e" });
+        assertEqualTrialResults(results, [
+          { selectedImageId: "a" },
+          { selectedImageId: "g" },
+          { selectedImageId: "e" },
+        ]);
+      },
+      (r) => (results = r)
     );
   });
 });

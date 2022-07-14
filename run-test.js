@@ -1,6 +1,8 @@
 export function runTest(startButton, trials, continueButton, onFinished) {
-  trials.setOnNextCompletion(() => {
-    if (trials.completed()) onFinished();
+  const results = [];
+  trials.setOnNextCompletion((result) => {
+    results.push(result);
+    if (trials.completed()) onFinished(results);
     else continueButton.show();
   });
   continueButton.setOnClick(() => {
