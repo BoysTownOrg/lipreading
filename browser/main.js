@@ -57,7 +57,7 @@ class TrialCompletionHandler {
     this.trials = trials;
   }
 
-  call() {
+  call(selectedImageId) {
     this.trials.onNextCompletion();
   }
 }
@@ -96,7 +96,8 @@ class Images {
 
   setOnTouch(f) {
     this.imageElementsWithUrls.forEach(
-      (imageElementWithUrl) => (imageElementWithUrl.element.onclick = () => f())
+      (imageElementWithUrl) =>
+        (imageElementWithUrl.element.onclick = () => f(imageElementWithUrl.url))
     );
   }
 
