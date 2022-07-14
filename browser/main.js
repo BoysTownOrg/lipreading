@@ -112,7 +112,7 @@ class Trials {
     bottomRightImage,
     videoElement,
     stimuli,
-    urls
+    trials
   ) {
     this.imageContainers = imageContainers;
     this.topLeftImage = topLeftImage;
@@ -121,18 +121,20 @@ class Trials {
     this.bottomRightImage = bottomRightImage;
     this.videoElement = videoElement;
     this.stimuli = stimuli;
-    this.urls = urls;
+    this.trials = trials;
     this.onNextCompletion = () => {};
   }
 
   runNext() {
-    const urls = this.urls.shift();
-    this.topLeftImage.src = this.stimuli.objectURLs[urls.image.topLeft];
-    this.topRightImage.src = this.stimuli.objectURLs[urls.image.topRight];
-    this.bottomLeftImage.src = this.stimuli.objectURLs[urls.image.bottomLeft];
-    this.bottomRightImage.src = this.stimuli.objectURLs[urls.image.bottomRight];
-    this.videoElement.src = this.stimuli.objectURLs[urls.video];
-    this.videoElement.muted = true;
+    const trial = this.trials.shift();
+    this.topLeftImage.src = this.stimuli.objectURLs[trial.url.image.topLeft];
+    this.topRightImage.src = this.stimuli.objectURLs[trial.url.image.topRight];
+    this.bottomLeftImage.src =
+      this.stimuli.objectURLs[trial.url.image.bottomLeft];
+    this.bottomRightImage.src =
+      this.stimuli.objectURLs[trial.url.image.bottomRight];
+    this.videoElement.src = this.stimuli.objectURLs[trial.url.video];
+    this.videoElement.muted = trial.muted;
     runTrial(
       new Video(this.videoElement),
       new Images(this.imageContainers, [
@@ -150,7 +152,7 @@ class Trials {
   }
 
   completed() {
-    return this.urls.length === 0;
+    return this.trials.length === 0;
   }
 }
 
@@ -270,11 +272,11 @@ jatos.onLoad(() => {
   fetch("trials.txt")
     .then((p) => p.text())
     .then((text) => {
-      const trialUrls = parseTrials(text);
+      const trials = parseTrials(text);
       preloadStimuli(
         stimuli,
         new ProgressBar(barContainingElement, barElement),
-        uniqueUrls(trialUrls),
+        uniqueUrls(trials),
         () =>
           runTest(
             new Button(startButtonElement),
@@ -291,7 +293,7 @@ jatos.onLoad(() => {
               bottomRightImage,
               videoElement,
               stimuli,
-              trialUrls
+              trials
             ),
             new Button(continueButtonElement),
             () => jatos.endStudy()
