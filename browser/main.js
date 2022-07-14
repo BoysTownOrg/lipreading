@@ -1,6 +1,8 @@
+import { parseTrialUrls } from "../parse-trial-urls.js";
 import { preloadStimuli } from "../preload-stimuli.js";
 import { runTest } from "../run-test.js";
 import { runTrial } from "../run-trial.js";
+import { uniqueUrls } from "../unique-urls.js";
 
 function hideElement(element) {
   element.style.visibility = "hidden";
@@ -265,74 +267,35 @@ document.body.appendChild(barContainingElement);
 
 const stimuli = new Resources();
 jatos.onLoad(() => {
-  preloadStimuli(
-    stimuli,
-    new ProgressBar(barContainingElement, barElement),
-    [
-      "bag.mp4",
-      "ball.mp4",
-      "bath.mp4",
-      "bag.jpg",
-      "ball.jpg",
-      "bath.jpg",
-      "bed.jpg",
-      "bird.jpg",
-      "cake.jpg",
-      "fish.jpg",
-      "foot.jpg",
-      "green.jpg",
-      "gum.jpg",
-      "hand.jpg",
-      "kick.jpg",
-    ],
-    () =>
-      runTest(
-        new Button(startButtonElement),
-        new Trials(
-          [
-            topLeftQuadrant,
-            topRightQuadrant,
-            bottomLeftQuadrant,
-            bottomRightQuadrant,
-          ],
-          topLeftImage,
-          topRightImage,
-          bottomLeftImage,
-          bottomRightImage,
-          videoElement,
-          stimuli,
-          [
-            {
-              image: {
-                topLeft: "bag.jpg",
-                topRight: "bed.jpg",
-                bottomLeft: "bird.jpg",
-                bottomRight: "cake.jpg",
-              },
-              video: "bag.mp4",
-            },
-            {
-              image: {
-                topLeft: "fish.jpg",
-                topRight: "ball.jpg",
-                bottomLeft: "foot.jpg",
-                bottomRight: "green.jpg",
-              },
-              video: "ball.mp4",
-            },
-            {
-              image: {
-                topLeft: "gum.jpg",
-                topRight: "hand.jpg",
-                bottomLeft: "bath.jpg",
-                bottomRight: "kick.jpg",
-              },
-              video: "bath.mp4",
-            },
-          ]
-        ),
-        new Button(continueButtonElement),
-        () => jatos.endStudy()
-      )
-  );
+  fetch("trials.txt")
+    .then((p) => p.text())
+    .then((text) => {
+      const trialUrls = parseTrialUrls(text);
+      preloadStimuli(
+        stimuli,
+        new ProgressBar(barContainingElement, barElement),
+        uniqueUrls(trialUrls),
+        () =>
+          runTest(
+            new Button(startButtonElement),
+            new Trials(
+              [
+                topLeftQuadrant,
+                topRightQuadrant,
+                bottomLeftQuadrant,
+                bottomRightQuadrant,
+              ],
+              topLeftImage,
+              topRightImage,
+              bottomLeftImage,
+              bottomRightImage,
+              videoElement,
+              stimuli,
+              trialUrls
+            ),
+            new Button(continueButtonElement),
+            () => jatos.endStudy()
+          )
+      );
+    });
 });
