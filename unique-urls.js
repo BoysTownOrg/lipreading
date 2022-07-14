@@ -1,11 +1,11 @@
-export function uniqueUrls(trialUrls) {
+export function uniqueUrls(trials) {
   const unique = new Set();
-  trialUrls.forEach((urls) => {
-    unique.add(urls.image.topLeft);
-    unique.add(urls.image.topRight);
-    unique.add(urls.image.bottomLeft);
-    unique.add(urls.image.bottomRight);
-    unique.add(urls.video);
+  trials.forEach((trial) => {
+    unique.add(trial.url.image.topLeft);
+    unique.add(trial.url.image.topRight);
+    unique.add(trial.url.image.bottomLeft);
+    unique.add(trial.url.image.bottomRight);
+    unique.add(trial.url.video);
   });
   return [...unique].sort();
 }

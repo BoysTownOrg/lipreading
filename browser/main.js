@@ -1,4 +1,4 @@
-import { parseTrialUrls } from "../parse-trial-urls.js";
+import { parseTrials } from "../parse-trials.js";
 import { preloadStimuli } from "../preload-stimuli.js";
 import { runTest } from "../run-test.js";
 import { runTrial } from "../run-trial.js";
@@ -270,7 +270,7 @@ jatos.onLoad(() => {
   fetch("trials.txt")
     .then((p) => p.text())
     .then((text) => {
-      const trialUrls = parseTrialUrls(text);
+      const trialUrls = parseTrials(text);
       preloadStimuli(
         stimuli,
         new ProgressBar(barContainingElement, barElement),

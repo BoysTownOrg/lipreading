@@ -12,31 +12,37 @@ describe("parseTrialUrls()", () => {
     assertEqualArrays(
       uniqueUrls([
         {
-          image: {
-            topLeft: "watch.jpg",
-            topRight: "wood.jpg",
-            bottomLeft: "box.jpg",
-            bottomRight: "trash.jpg",
+          url: {
+            image: {
+              topLeft: "watch.jpg",
+              topRight: "wood.jpg",
+              bottomLeft: "box.jpg",
+              bottomRight: "trash.jpg",
+            },
+            video: "watch.mp4",
           },
-          video: "watch.mp4",
         },
         {
-          image: {
-            topLeft: "pie.jpg",
-            topRight: "mouse.jpg",
-            bottomLeft: "slide.jpg",
-            bottomRight: "trash.jpg",
+          url: {
+            image: {
+              topLeft: "pie.jpg",
+              topRight: "mouse.jpg",
+              bottomLeft: "slide.jpg",
+              bottomRight: "trash.jpg",
+            },
+            video: "juice.mp4",
           },
-          video: "juice.mp4",
         },
         {
-          image: {
-            topLeft: "wood.jpg",
-            topRight: "shoe.jpg",
-            bottomLeft: "blue.jpg",
-            bottomRight: "bus.jpg",
+          url: {
+            image: {
+              topLeft: "wood.jpg",
+              topRight: "shoe.jpg",
+              bottomLeft: "blue.jpg",
+              bottomRight: "bus.jpg",
+            },
+            video: "juice.mp4",
           },
-          video: "juice.mp4",
         },
       ]),
       [
