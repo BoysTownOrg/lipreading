@@ -183,6 +183,12 @@ class Button {
   }
 }
 
+class PerformanceTimeStamp {
+  nowMilliseconds() {
+    return performance.now();
+  }
+}
+
 function centerElementAtPercentage(element, x, y) {
   element.style.left = `${x}%`;
   element.style.top = `${y}%`;
@@ -305,6 +311,7 @@ jatos.onLoad(() => {
               trials
             ),
             new Button(continueButtonElement),
+            new PerformanceTimeStamp(),
             (results) => jatos.endStudy(results)
           )
       );
