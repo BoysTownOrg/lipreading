@@ -19,16 +19,16 @@ function assertEqualTrials(actual, expected) {
 describe("parseTrials()", () => {
   it("tbd", () => {
     assertEqualTrials(
-      parseTrials(`watch av
-watch wood box trash
-pie av
-pie mouse slide boy
-juice vo
-juice shoe blue bus
-pink vo
-pink bowl hill tongue
-bone vo
-bone bug soap red
+      parseTrials(`watch.mp4 av
+watch.jpg wood.jpg box.jpg trash.jpg
+pie.mp4 av
+pie.jpg mouse.jpg slide.jpg boy.jpg
+juice.mp4 vo
+juice.jpg shoe.jpg blue.jpg bus.jpg
+pink.mp4 vo
+pink.jpg bowl.jpg hill.jpg tongue.jpg
+bone.mp4 vo
+bone.jpg bug.jpg soap.jpg red.jpg
 `),
       [
         {
