@@ -205,8 +205,8 @@ function quadrantImage() {
   const image = new Image();
   fixElementPosition(image);
   centerElementAtPercentage(image, 50, 50);
-  image.style.maxWidth = percentString(75);
-  image.style.maxHeight = percentString(75);
+  image.style.maxWidth = percentString(95);
+  image.style.maxHeight = percentString(95);
   return image;
 }
 
