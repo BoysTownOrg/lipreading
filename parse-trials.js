@@ -9,12 +9,12 @@ export function parseTrials(text) {
       trials.push({
         url: {
           image: {
-            topLeft: `${imageStems[0]}.jpg`,
-            topRight: `${imageStems[1]}.jpg`,
-            bottomLeft: `${imageStems[2]}.jpg`,
-            bottomRight: `${imageStems[3]}.jpg`,
+            topLeft: `${imageStems[0]}`,
+            topRight: `${imageStems[1]}`,
+            bottomLeft: `${imageStems[2]}`,
+            bottomRight: `${imageStems[3]}`,
           },
-          video: `${videoStem}.mp4`,
+          video: `${videoStem}`,
         },
         muted,
       });
