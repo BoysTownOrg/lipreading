@@ -220,6 +220,18 @@ function quadrantDiv() {
   return div;
 }
 
+function lowerRightButton(text) {
+  const button = document.createElement("button");
+  fixElementPosition(button);
+  centerElementAtPercentage(button, 90, 90);
+  hideElement(button);
+  button.textContent = text;
+  button.style.width = "12%";
+  button.style.height = "8%";
+  button.style.fontSize = "20px";
+  return button;
+}
+
 const barContainingElement = document.createElement("div");
 barContainingElement.style.width = percentString(75);
 barContainingElement.style.height = percentString(5);
@@ -261,17 +273,8 @@ fixElementPosition(videoElement);
 centerElementAtPercentage(videoElement, 50, 50);
 hideElement(videoElement);
 
-const startButtonElement = document.createElement("button");
-fixElementPosition(startButtonElement);
-centerElementAtPercentage(startButtonElement, 50, 50);
-hideElement(startButtonElement);
-startButtonElement.textContent = "start";
-
-const continueButtonElement = document.createElement("button");
-fixElementPosition(continueButtonElement);
-centerElementAtPercentage(continueButtonElement, 50, 50);
-hideElement(continueButtonElement);
-continueButtonElement.textContent = "continue";
+const startButtonElement = lowerRightButton("Start");
+const continueButtonElement = lowerRightButton("Continue");
 
 document.body.appendChild(topLeftQuadrant);
 document.body.appendChild(topRightQuadrant);
