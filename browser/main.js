@@ -77,6 +77,8 @@ class Video {
 
   play() {
     this.videoElement.play();
+    this.videoElement.pause();
+    setTimeout(() => this.videoElement.play(), 1000);
   }
 
   show() {
