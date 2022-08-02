@@ -76,6 +76,7 @@ class Video {
   }
 
   play() {
+    // https://stackoverflow.com/a/10983845
     this.videoElement.play();
     this.videoElement.pause();
     setTimeout(() => this.videoElement.play(), 1000);
