@@ -25,7 +25,7 @@ export function runTest(
   trials: Trials,
   continueButton: Button,
   timeStamp: TimeStamp,
-  onFinished: (_: Result[]) => void
+  onFinished: (results: Result[]) => void
 ) {
   const results: Result[] = [];
   let startTimeMilliseconds = 0;

@@ -59,18 +59,13 @@ class UglyProgressBar implements ProgressBar {
 
 class TrialCompletionHandler implements CompletionHandler {
   trials: StraightforwardTrials;
-  videoUrl: string;
 
-  constructor(trials: StraightforwardTrials, videoUrl: string) {
+  constructor(trials: StraightforwardTrials) {
     this.trials = trials;
-    this.videoUrl = videoUrl;
   }
 
   call(selectedImageUrl: string) {
-    this.trials.onNextCompletion({
-      selectedImageUrl,
-      videoUrl: this.videoUrl,
-    });
+    this.trials.callback(selectedImageUrl);
   }
 }
 
@@ -140,6 +135,10 @@ class StraightforwardTrials implements Trials {
   stimuli: InMemoryStimuli;
   trials: Trial[];
   onNextCompletion: (result: Result) => void;
+  failed: boolean;
+  videoUrl: string;
+  trialNumber: number;
+  failureCriterion: (result: Result, trialNumber: number) => boolean;
 
   constructor(
     imageContainers: HTMLElement[],
@@ -149,7 +148,8 @@ class StraightforwardTrials implements Trials {
     bottomRightImage: HTMLImageElement,
     videoElement: HTMLVideoElement,
     stimuli: InMemoryStimuli,
-    trials: Trial[]
+    trials: Trial[],
+    failureCriterion: (result: Result, trialNumber: number) => boolean
   ) {
     this.imageContainers = imageContainers;
     this.topLeftImage = topLeftImage;
@@ -159,6 +159,11 @@ class StraightforwardTrials implements Trials {
     this.videoElement = videoElement;
     this.stimuli = stimuli;
     this.trials = trials;
+    this.failureCriterion = failureCriterion;
+
+    this.failed = false;
+    this.trialNumber = 0;
+    this.videoUrl = "";
     this.onNextCompletion = () => { };
   }
 
@@ -167,6 +172,9 @@ class StraightforwardTrials implements Trials {
     if (!trial)
       return
 
+    this.trialNumber += 1;
+
+    this.videoUrl = trial.url.video;
     this.videoElement.src = this.stimuli.objectURLs[trial.url.video];
     this.videoElement.muted = trial.muted === undefined ? false : trial.muted;
     runTrial(
@@ -181,7 +189,7 @@ class StraightforwardTrials implements Trials {
         ],
         this.stimuli
       ),
-      new TrialCompletionHandler(this, trial.url.video)
+      new TrialCompletionHandler(this)
     );
   }
 
@@ -189,8 +197,17 @@ class StraightforwardTrials implements Trials {
     this.onNextCompletion = f;
   }
 
+  callback(selectedImageUrl: string) {
+    const result = {
+      selectedImageUrl,
+      videoUrl: this.videoUrl,
+    };
+    this.failed = this.failureCriterion(result, this.trialNumber)
+    this.onNextCompletion(result)
+  }
+
   completed() {
-    return this.trials.length === 0;
+    return this.failed || this.trials.length === 0;
   }
 }
 
@@ -263,93 +280,96 @@ function lowerRightButton(text: string) {
   return button;
 }
 
-const barContainingElement = document.createElement("div");
-barContainingElement.style.width = percentString(75);
-barContainingElement.style.height = percentString(5);
-barContainingElement.style.backgroundColor = "grey";
-fixElementPosition(barContainingElement);
-centerElementAtPercentage(barContainingElement, 50, 50);
-hideElement(barContainingElement);
-
-const barElement = document.createElement("div");
-barElement.style.backgroundColor = "green";
-barElement.style.height = percentString(100);
-hideElement(barElement);
-barContainingElement.appendChild(barElement);
-
-const topLeftQuadrant = quadrantDiv();
-centerElementAtPercentage(topLeftQuadrant, 25, 25);
-const topLeftImage = quadrantImage();
-topLeftQuadrant.appendChild(topLeftImage);
-
-const topRightQuadrant = quadrantDiv();
-centerElementAtPercentage(topRightQuadrant, 75, 25);
-const topRightImage = quadrantImage();
-topRightQuadrant.appendChild(topRightImage);
-
-const bottomLeftQuadrant = quadrantDiv();
-centerElementAtPercentage(bottomLeftQuadrant, 25, 75);
-const bottomLeftImage = quadrantImage();
-bottomLeftQuadrant.appendChild(bottomLeftImage);
-
-const bottomRightQuadrant = quadrantDiv();
-centerElementAtPercentage(bottomRightQuadrant, 75, 75);
-const bottomRightImage = quadrantImage();
-bottomRightQuadrant.appendChild(bottomRightImage);
-
-const videoElement = document.createElement("video");
-videoElement.style.width = percentString(75);
-videoElement.style.height = percentString(75);
-fixElementPosition(videoElement);
-centerElementAtPercentage(videoElement, 50, 50);
-hideElement(videoElement);
-
-const startButtonElement = lowerRightButton("Start");
-const continueButtonElement = lowerRightButton("Continue");
-
-document.body.appendChild(topLeftQuadrant);
-document.body.appendChild(topRightQuadrant);
-document.body.appendChild(bottomLeftQuadrant);
-document.body.appendChild(bottomRightQuadrant);
-document.body.appendChild(videoElement);
-document.body.appendChild(startButtonElement);
-document.body.appendChild(continueButtonElement);
-document.body.appendChild(barContainingElement);
-
 declare const jatos: any;
 
-const stimuli = new InMemoryStimuli();
-jatos.onLoad(() => {
-  fetch("trials.txt")
-    .then((p) => p.text())
-    .then((text) => {
-      const trials = parseTrials(text);
-      preloadStimuli(
-        stimuli,
-        new UglyProgressBar(barContainingElement, barElement),
-        uniqueUrls(trials),
-        () =>
-          runTest(
-            new SimpleButton(startButtonElement),
-            new StraightforwardTrials(
-              [
-                topLeftQuadrant,
-                topRightQuadrant,
-                bottomLeftQuadrant,
-                bottomRightQuadrant,
-              ],
-              topLeftImage,
-              topRightImage,
-              bottomLeftImage,
-              bottomRightImage,
-              videoElement,
-              stimuli,
-              trials
-            ),
-            new SimpleButton(continueButtonElement),
-            new PerformanceTimeStamp(),
-            (results) => jatos.endStudy(results)
-          )
-      );
-    });
-});
+export function run(failureCriterion: (result: Result, trialNumber: number) => boolean = () => false) {
+  const barContainingElement = document.createElement("div");
+  barContainingElement.style.width = percentString(75);
+  barContainingElement.style.height = percentString(5);
+  barContainingElement.style.backgroundColor = "grey";
+  fixElementPosition(barContainingElement);
+  centerElementAtPercentage(barContainingElement, 50, 50);
+  hideElement(barContainingElement);
+
+  const barElement = document.createElement("div");
+  barElement.style.backgroundColor = "green";
+  barElement.style.height = percentString(100);
+  hideElement(barElement);
+  barContainingElement.appendChild(barElement);
+
+  const topLeftQuadrant = quadrantDiv();
+  centerElementAtPercentage(topLeftQuadrant, 25, 25);
+  const topLeftImage = quadrantImage();
+  topLeftQuadrant.appendChild(topLeftImage);
+
+  const topRightQuadrant = quadrantDiv();
+  centerElementAtPercentage(topRightQuadrant, 75, 25);
+  const topRightImage = quadrantImage();
+  topRightQuadrant.appendChild(topRightImage);
+
+  const bottomLeftQuadrant = quadrantDiv();
+  centerElementAtPercentage(bottomLeftQuadrant, 25, 75);
+  const bottomLeftImage = quadrantImage();
+  bottomLeftQuadrant.appendChild(bottomLeftImage);
+
+  const bottomRightQuadrant = quadrantDiv();
+  centerElementAtPercentage(bottomRightQuadrant, 75, 75);
+  const bottomRightImage = quadrantImage();
+  bottomRightQuadrant.appendChild(bottomRightImage);
+
+  const videoElement = document.createElement("video");
+  videoElement.style.width = percentString(75);
+  videoElement.style.height = percentString(75);
+  fixElementPosition(videoElement);
+  centerElementAtPercentage(videoElement, 50, 50);
+  hideElement(videoElement);
+
+  const startButtonElement = lowerRightButton("Start");
+  const continueButtonElement = lowerRightButton("Continue");
+
+  document.body.appendChild(topLeftQuadrant);
+  document.body.appendChild(topRightQuadrant);
+  document.body.appendChild(bottomLeftQuadrant);
+  document.body.appendChild(bottomRightQuadrant);
+  document.body.appendChild(videoElement);
+  document.body.appendChild(startButtonElement);
+  document.body.appendChild(continueButtonElement);
+  document.body.appendChild(barContainingElement);
+
+  const stimuli = new InMemoryStimuli();
+  jatos.onLoad(() => {
+    fetch("trials.txt")
+      .then((p) => p.text())
+      .then((text) => {
+        const trials = parseTrials(text);
+        preloadStimuli(
+          stimuli,
+          new UglyProgressBar(barContainingElement, barElement),
+          uniqueUrls(trials),
+          () =>
+            runTest(
+              new SimpleButton(startButtonElement),
+              new StraightforwardTrials(
+                [
+                  topLeftQuadrant,
+                  topRightQuadrant,
+                  bottomLeftQuadrant,
+                  bottomRightQuadrant,
+                ],
+                topLeftImage,
+                topRightImage,
+                bottomLeftImage,
+                bottomRightImage,
+                videoElement,
+                stimuli,
+                trials,
+                failureCriterion
+              ),
+              new SimpleButton(continueButtonElement),
+              new PerformanceTimeStamp(),
+              (results) => jatos.endStudy(results)
+            )
+        );
+      });
+  });
+}
