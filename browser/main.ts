@@ -1,27 +1,29 @@
-import { parseTrials } from "../parse-trials.js";
-import { preloadStimuli } from "../preload-stimuli.js";
-import { runTest } from "../run-test.js";
-import { runTrial } from "../run-trial.js";
-import { uniqueUrls } from "../unique-urls.js";
+import { parseTrials, Trial } from "../parse-trials.ts";
+import { preloadStimuli, ProgressBar, Stimuli } from "../preload-stimuli.ts";
+import { Button, Result, runTest, TimeStamp, Trials } from "../run-test.ts";
+import { CompletionHandler, Images, runTrial, Video } from "../run-trial.ts";
+import { uniqueUrls } from "../unique-urls.ts";
 
-function hideElement(element) {
+function hideElement(element: HTMLElement) {
   element.style.visibility = "hidden";
 }
 
-function showElement(element) {
+function showElement(element: HTMLElement) {
   element.style.visibility = "visible";
 }
 
-function percentString(n) {
+function percentString(n: number) {
   return `${n}%`;
 }
 
-class Resources {
+class InMemoryStimuli implements Stimuli {
+  objectURLs: { [key: string]: string };
+
   constructor() {
     this.objectURLs = {};
   }
 
-  load(url, onFinished) {
+  load(url: string, onFinished: () => void): void {
     fetch(url)
       .then((response) => response.blob())
       .then((blob) => {
@@ -31,13 +33,16 @@ class Resources {
   }
 }
 
-class ProgressBar {
-  constructor(barContainingElement, barElement) {
+class UglyProgressBar implements ProgressBar {
+  barContainingElement: HTMLElement;
+  barElement: HTMLElement;
+
+  constructor(barContainingElement: HTMLElement, barElement: HTMLElement) {
     this.barContainingElement = barContainingElement;
     this.barElement = barElement;
   }
 
-  update(widthPercent) {
+  update(widthPercent: number) {
     this.barElement.style.width = `${widthPercent}%`;
   }
 
@@ -52,13 +57,16 @@ class ProgressBar {
   }
 }
 
-class TrialCompletionHandler {
-  constructor(trials, videoUrl) {
+class TrialCompletionHandler implements CompletionHandler {
+  trials: StraightforwardTrials;
+  videoUrl: string;
+
+  constructor(trials: StraightforwardTrials, videoUrl: string) {
     this.trials = trials;
     this.videoUrl = videoUrl;
   }
 
-  call(selectedImageUrl) {
+  call(selectedImageUrl: string) {
     this.trials.onNextCompletion({
       selectedImageUrl,
       videoUrl: this.videoUrl,
@@ -66,12 +74,14 @@ class TrialCompletionHandler {
   }
 }
 
-class Video {
-  constructor(videoElement) {
+class DelayedVideo implements Video {
+  videoElement: HTMLVideoElement;
+
+  constructor(videoElement: HTMLVideoElement) {
     this.videoElement = videoElement;
   }
 
-  setOnFinish(f) {
+  setOnFinish(f: () => void) {
     this.videoElement.onended = () => f();
   }
 
@@ -91,8 +101,11 @@ class Video {
   }
 }
 
-class Images {
-  constructor(imageContainers, imageElementsWithUrls, stimuli) {
+class SimpleImages implements Images {
+  imageContainers: HTMLElement[];
+  imageElementsWithUrls: { element: HTMLImageElement; url: string; }[];
+
+  constructor(imageContainers: HTMLElement[], imageElementsWithUrls: { element: HTMLImageElement, url: string }[], stimuli: InMemoryStimuli) {
     this.imageContainers = imageContainers;
     this.imageElementsWithUrls = imageElementsWithUrls;
     this.imageElementsWithUrls.forEach((imageElementWithUrl) => {
@@ -101,7 +114,7 @@ class Images {
     });
   }
 
-  setOnTouch(f) {
+  setOnTouch(f: (url: string) => void) {
     this.imageElementsWithUrls.forEach(
       (imageElementWithUrl) =>
         (imageElementWithUrl.element.onclick = () => f(imageElementWithUrl.url))
@@ -117,16 +130,26 @@ class Images {
   }
 }
 
-class Trials {
+class StraightforwardTrials implements Trials {
+  imageContainers: HTMLElement[];
+  topLeftImage: HTMLImageElement;
+  topRightImage: HTMLImageElement;
+  bottomLeftImage: HTMLImageElement;
+  bottomRightImage: HTMLImageElement;
+  videoElement: HTMLVideoElement;
+  stimuli: InMemoryStimuli;
+  trials: Trial[];
+  onNextCompletion: (result: Result) => void;
+
   constructor(
-    imageContainers,
-    topLeftImage,
-    topRightImage,
-    bottomLeftImage,
-    bottomRightImage,
-    videoElement,
-    stimuli,
-    trials
+    imageContainers: HTMLElement[],
+    topLeftImage: HTMLImageElement,
+    topRightImage: HTMLImageElement,
+    bottomLeftImage: HTMLImageElement,
+    bottomRightImage: HTMLImageElement,
+    videoElement: HTMLVideoElement,
+    stimuli: InMemoryStimuli,
+    trials: Trial[]
   ) {
     this.imageContainers = imageContainers;
     this.topLeftImage = topLeftImage;
@@ -136,16 +159,19 @@ class Trials {
     this.videoElement = videoElement;
     this.stimuli = stimuli;
     this.trials = trials;
-    this.onNextCompletion = () => {};
+    this.onNextCompletion = () => { };
   }
 
   runNext() {
     const trial = this.trials.shift();
+    if (!trial)
+      return
+
     this.videoElement.src = this.stimuli.objectURLs[trial.url.video];
-    this.videoElement.muted = trial.muted;
+    this.videoElement.muted = trial.muted === undefined ? false : trial.muted;
     runTrial(
-      new Video(this.videoElement),
-      new Images(
+      new DelayedVideo(this.videoElement),
+      new SimpleImages(
         this.imageContainers,
         [
           { element: this.topLeftImage, url: trial.url.image.topLeft },
@@ -159,7 +185,7 @@ class Trials {
     );
   }
 
-  setOnNextCompletion(f) {
+  setOnNextCompletion(f: (result: Result) => void) {
     this.onNextCompletion = f;
   }
 
@@ -168,12 +194,14 @@ class Trials {
   }
 }
 
-class Button {
-  constructor(buttonElement) {
+class SimpleButton implements Button {
+  buttonElement: HTMLButtonElement;
+
+  constructor(buttonElement: HTMLButtonElement) {
     this.buttonElement = buttonElement;
   }
 
-  setOnClick(f) {
+  setOnClick(f: () => void) {
     this.buttonElement.onclick = () => f();
   }
 
@@ -186,13 +214,13 @@ class Button {
   }
 }
 
-class PerformanceTimeStamp {
+class PerformanceTimeStamp implements TimeStamp {
   nowMilliseconds() {
     return performance.now();
   }
 }
 
-function centerElementAtPercentage(element, x, y) {
+function centerElementAtPercentage(element: HTMLElement, x: number, y: number) {
   element.style.left = `${x}%`;
   element.style.top = `${y}%`;
   element.style.transform = `translate(${percentString(-50)}, ${percentString(
@@ -200,7 +228,7 @@ function centerElementAtPercentage(element, x, y) {
   )})`;
 }
 
-function fixElementPosition(element) {
+function fixElementPosition(element: HTMLElement) {
   element.style.position = "fixed";
 }
 
@@ -223,7 +251,7 @@ function quadrantDiv() {
   return div;
 }
 
-function lowerRightButton(text) {
+function lowerRightButton(text: string) {
   const button = document.createElement("button");
   fixElementPosition(button);
   centerElementAtPercentage(button, 90, 90);
@@ -288,7 +316,9 @@ document.body.appendChild(startButtonElement);
 document.body.appendChild(continueButtonElement);
 document.body.appendChild(barContainingElement);
 
-const stimuli = new Resources();
+declare const jatos: any;
+
+const stimuli = new InMemoryStimuli();
 jatos.onLoad(() => {
   fetch("trials.txt")
     .then((p) => p.text())
@@ -296,12 +326,12 @@ jatos.onLoad(() => {
       const trials = parseTrials(text);
       preloadStimuli(
         stimuli,
-        new ProgressBar(barContainingElement, barElement),
+        new UglyProgressBar(barContainingElement, barElement),
         uniqueUrls(trials),
         () =>
           runTest(
-            new Button(startButtonElement),
-            new Trials(
+            new SimpleButton(startButtonElement),
+            new StraightforwardTrials(
               [
                 topLeftQuadrant,
                 topRightQuadrant,
@@ -316,7 +346,7 @@ jatos.onLoad(() => {
               stimuli,
               trials
             ),
-            new Button(continueButtonElement),
+            new SimpleButton(continueButtonElement),
             new PerformanceTimeStamp(),
             (results) => jatos.endStudy(results)
           )
