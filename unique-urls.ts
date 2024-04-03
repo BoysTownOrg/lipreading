@@ -1,5 +1,7 @@
-export function uniqueUrls(trials) {
-  const unique = new Set();
+import { Trial } from "./parse-trials.ts"
+
+export function uniqueUrls(trials: Trial[]): string[] {
+  const unique: Set<string> = new Set();
   trials.forEach((trial) => {
     unique.add(trial.url.image.topLeft);
     unique.add(trial.url.image.topRight);

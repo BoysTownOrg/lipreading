@@ -12,7 +12,7 @@ interface TrialURL {
 
 export interface Trial {
   url: TrialURL,
-  muted: boolean,
+  muted?: boolean,
 }
 
 export function parseTrials(text: string): Trial[] {

@@ -40,7 +40,7 @@ class ProgressBarStub implements ProgressBar {
   }
 }
 
-function test(urls: string[], assertion: (_: ResourcesStub, _: ProgressBarStub) => void, onFinished = () => { }) {
+function test(urls: string[], assertion: (stimuli: ResourcesStub, progressBar: ProgressBarStub) => void, onFinished = () => { }) {
   const stimuli = new ResourcesStub();
   const progressBar = new ProgressBarStub();
   preloadStimuli(stimuli, progressBar, urls, onFinished);
@@ -49,7 +49,7 @@ function test(urls: string[], assertion: (_: ResourcesStub, _: ProgressBarStub) 
 
 describe("preloadStimuli()", () => {
   it("should show initial progress bar", () => {
-    test(["a.png", "b.mov", "c.jpg"], (stimuli, progressBar) => {
+    test(["a.png", "b.mov", "c.jpg"], (_stimuli, progressBar) => {
       assert.equal(progressBar.shown, true);
       assert.equal(progressBar.widthPercent, 0);
     });
