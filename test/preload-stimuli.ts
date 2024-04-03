@@ -1,26 +1,33 @@
 import assert from "assert";
-import { preloadStimuli } from "../preload-stimuli.js";
+import { preloadStimuli, Stimuli, ProgressBar } from "../preload-stimuli.ts";
 
-class ResourcesStub {
+class ResourcesStub implements Stimuli {
+  urls: string[];
+  onFinishedLoadings: (() => void)[];
+
   constructor() {
     this.urls = [];
     this.onFinishedLoadings = [];
   }
 
-  load(url, onFinished) {
+  load(url: string, onFinished: () => void) {
     this.urls.push(url);
     this.onFinishedLoadings.push(onFinished);
   }
 }
 
-class ProgressBarStub {
+class ProgressBarStub implements ProgressBar {
+  widthPercent: number;
+  shown: boolean;
+  hidden: boolean;
+
   constructor() {
     this.widthPercent = -1;
     this.shown = false;
     this.hidden = false;
   }
 
-  update(widthPercent) {
+  update(widthPercent: number) {
     this.widthPercent = widthPercent;
   }
 
@@ -33,7 +40,7 @@ class ProgressBarStub {
   }
 }
 
-function test(urls, assertion, onFinished = () => {}) {
+function test(urls: string[], assertion: (stimuli: ResourcesStub, progressBar: ProgressBarStub) => void, onFinished = () => { }) {
   const stimuli = new ResourcesStub();
   const progressBar = new ProgressBarStub();
   preloadStimuli(stimuli, progressBar, urls, onFinished);
@@ -42,7 +49,7 @@ function test(urls, assertion, onFinished = () => {}) {
 
 describe("preloadStimuli()", () => {
   it("should show initial progress bar", () => {
-    test(["a.png", "b.mov", "c.jpg"], (stimuli, progressBar) => {
+    test(["a.png", "b.mov", "c.jpg"], (_stimuli, progressBar) => {
       assert.equal(progressBar.shown, true);
       assert.equal(progressBar.widthPercent, 0);
     });

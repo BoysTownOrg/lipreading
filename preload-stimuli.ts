@@ -1,4 +1,14 @@
-export function preloadStimuli(stimuli, progressBar, urls, onFinished) {
+export interface Stimuli {
+  load(url: string, onFinished: () => void): void;
+}
+
+export interface ProgressBar {
+  update(widthPercent: number): void;
+  show(): void;
+  hide(): void;
+}
+
+export function preloadStimuli(stimuli: Stimuli, progressBar: ProgressBar, urls: string[], onFinished: () => void) {
   progressBar.show();
   progressBar.update(0);
   let completed = 0;

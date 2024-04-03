@@ -1,15 +1,20 @@
 import assert from "assert";
-import { runTrial } from "../run-trial.js";
+import { runTrial, Video, Images, CompletionHandler } from "../run-trial.ts";
 
-class VideoStub {
+class VideoStub implements Video {
+  played: boolean;
+  hidden: boolean;
+  shown: boolean;
+  onFinish: () => void;
+
   constructor() {
     this.played = false;
     this.hidden = false;
     this.shown = false;
-    this.onFinish = () => {};
+    this.onFinish = () => { };
   }
 
-  setOnFinish(f) {
+  setOnFinish(f: () => void) {
     this.onFinish = f;
   }
 
@@ -26,14 +31,18 @@ class VideoStub {
   }
 }
 
-class ImagesStub {
+class ImagesStub implements Images {
+  shown: boolean;
+  hidden: boolean;
+  onTouch: (url: string) => void;
+
   constructor() {
     this.shown = false;
     this.hidden = false;
-    this.onTouch = () => {};
+    this.onTouch = () => { };
   }
 
-  setOnTouch(f) {
+  setOnTouch(f: (url: string) => void) {
     this.onTouch = f;
   }
 
@@ -46,19 +55,22 @@ class ImagesStub {
   }
 }
 
-class HandlerStub {
+class HandlerStub implements CompletionHandler {
+  called: boolean;
+  passed: string;
+
   constructor() {
     this.called = false;
-    this.passed = null;
+    this.passed = "";
   }
 
-  call(passed) {
+  call(passed: string) {
     this.called = true;
     this.passed = passed;
   }
 }
 
-function test(assertion) {
+function test(assertion: (video: VideoStub, images: ImagesStub, completionHandler: HandlerStub) => void) {
   const video = new VideoStub();
   const images = new ImagesStub();
   const completionHandler = new HandlerStub();
@@ -99,7 +111,7 @@ describe("runTrial()", () => {
     test((video, images) => {
       video.onFinish();
       assert.equal(images.hidden, false);
-      images.onTouch();
+      images.onTouch("");
       assert.equal(images.hidden, true);
     });
   });
@@ -108,7 +120,7 @@ describe("runTrial()", () => {
     test((video, images, completionHandler) => {
       video.onFinish();
       assert.equal(completionHandler.called, false);
-      images.onTouch();
+      images.onTouch("");
       assert.equal(completionHandler.called, true);
     });
   });

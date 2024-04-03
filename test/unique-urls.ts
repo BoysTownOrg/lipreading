@@ -1,7 +1,7 @@
 import assert from "assert";
-import { uniqueUrls } from "../unique-urls.js";
+import { uniqueUrls } from "../unique-urls.ts";
 
-function assertEqualArrays(actual, expected) {
+function assertEqualArrays(actual: string[], expected: string[]) {
   assert.equal(actual.length, expected.length);
   for (let i = 0; i < expected.length; i += 1)
     assert.equal(actual[i], expected[i]);
