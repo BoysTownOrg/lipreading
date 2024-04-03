@@ -1,7 +1,7 @@
 import assert from "assert";
-import { parseTrials } from "../parse-trials.js";
+import { parseTrials, Trial } from "../parse-trials.ts";
 
-function assertEqualTrial(actual, expected) {
+function assertEqualTrial(actual: Trial, expected: Trial) {
   assert.equal(actual.url.image.topLeft, expected.url.image.topLeft);
   assert.equal(actual.url.image.topRight, expected.url.image.topRight);
   assert.equal(actual.url.image.bottomLeft, expected.url.image.bottomLeft);
@@ -10,7 +10,7 @@ function assertEqualTrial(actual, expected) {
   assert.equal(actual.muted, expected.muted);
 }
 
-function assertEqualTrials(actual, expected) {
+function assertEqualTrials(actual: Trial[], expected: Trial[]) {
   assert.equal(actual.length, expected.length);
   for (let i = 0; i < expected.length; i += 1)
     assertEqualTrial(actual[i], expected[i]);

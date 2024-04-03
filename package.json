@@ -4,6 +4,11 @@
     "mocha": "^10.0.0"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha test/*.ts"
+  },
+  "dependencies": {
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.12.3",
+    "tsx": "^4.7.1"
   }
 }

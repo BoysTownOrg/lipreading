@@ -1,14 +1,18 @@
 import assert from "assert";
-import { runTest } from "../run-test.js";
+import { runTest, Button, Result, Trials, TimeStamp } from "../run-test.ts";
 
-class ButtonStub {
+class ButtonStub implements Button {
+  shown: boolean;
+  hidden: boolean;
+  onClick: () => void;
+
   constructor() {
     this.shown = false;
     this.hidden = false;
-    this.onClick = () => {};
+    this.onClick = () => { };
   }
 
-  setOnClick(f) {
+  setOnClick(f: () => void) {
     this.onClick = f;
   }
 
@@ -21,18 +25,22 @@ class ButtonStub {
   }
 }
 
-class TrialsStub {
+class TrialsStub implements Trials {
+  nextRun: boolean;
+  hasCompleted: boolean;
+  onNextCompletion: (_: Result) => void;
+
   constructor() {
     this.nextRun = false;
     this.hasCompleted = false;
-    this.onNextCompletion = () => {};
+    this.onNextCompletion = () => { };
   }
 
   runNext() {
     this.nextRun = true;
   }
 
-  setOnNextCompletion(f) {
+  setOnNextCompletion(f: (_: Result) => void) {
     this.onNextCompletion = f;
   }
 
@@ -41,7 +49,9 @@ class TrialsStub {
   }
 }
 
-class TimeStampStub {
+class TimeStampStub implements TimeStamp {
+  nowMilliseconds_: number;
+
   constructor() {
     this.nowMilliseconds_ = -1;
   }
@@ -50,26 +60,26 @@ class TimeStampStub {
     return this.nowMilliseconds_;
   }
 
-  setNowMilliseconds(ms) {
+  setNowMilliseconds(ms: number) {
     this.nowMilliseconds_ = ms;
   }
 }
 
-function assertEqualTrialResult(actual, expected) {
-  assert.equal(actual.selectedImageId, expected.selectedImageId);
+function assertEqualTrialResult(actual: Result, expected: Result) {
+  assert.equal(actual.selectedImageUrl, expected.selectedImageUrl);
   assert.equal(
     actual.elapsedTimeMilliseconds,
     expected.elapsedTimeMilliseconds
   );
 }
 
-function assertEqualTrialResults(actual, expected) {
+function assertEqualTrialResults(actual: Result[], expected: Result[]) {
   assert.equal(actual.length, expected.length);
   for (let i = 0; i < expected.length; i += 1)
     assertEqualTrialResult(actual[i], expected[i]);
 }
 
-function test(assertion, onFinished = () => {}) {
+function test(assertion: (startButton: ButtonStub, trials: TrialsStub, continueButton: ButtonStub, timeStamp: TimeStampStub) => void, onFinished: (_: Result[]) => void = () => { }) {
   const startButton = new ButtonStub();
   const trials = new TrialsStub();
   const continueButton = new ButtonStub();
@@ -105,7 +115,10 @@ describe("runTest()", () => {
     test((startButton, trials, continueButton) => {
       startButton.onClick();
       assert.equal(continueButton.shown, false);
-      trials.onNextCompletion();
+      trials.onNextCompletion({
+        selectedImageUrl: "",
+        videoUrl: ""
+      });
       assert.equal(continueButton.shown, true);
     });
   });
@@ -115,7 +128,10 @@ describe("runTest()", () => {
       startButton.onClick();
       assert.equal(continueButton.shown, false);
       trials.hasCompleted = true;
-      trials.onNextCompletion();
+      trials.onNextCompletion({
+        selectedImageUrl: "",
+        videoUrl: ""
+      });
       assert.equal(continueButton.shown, false);
     });
   });
@@ -123,7 +139,10 @@ describe("runTest()", () => {
   it("runs next trial when continue button touched", () => {
     test((startButton, trials, continueButton) => {
       startButton.onClick();
-      trials.onNextCompletion();
+      trials.onNextCompletion({
+        selectedImageUrl: "",
+        videoUrl: ""
+      });
       trials.nextRun = false;
       continueButton.onClick();
       assert.equal(trials.nextRun, true);
@@ -133,7 +152,10 @@ describe("runTest()", () => {
   it("hides continue button when touched", () => {
     test((startButton, trials, continueButton) => {
       startButton.onClick();
-      trials.onNextCompletion();
+      trials.onNextCompletion({
+        selectedImageUrl: "",
+        videoUrl: ""
+      });
       assert.equal(continueButton.hidden, false);
       continueButton.onClick();
       assert.equal(continueButton.hidden, true);
@@ -147,7 +169,10 @@ describe("runTest()", () => {
         startButton.onClick();
         trials.hasCompleted = true;
         assert.equal(finished, false);
-        trials.onNextCompletion();
+        trials.onNextCompletion({
+          selectedImageUrl: "",
+          videoUrl: ""
+        });
         assert.equal(finished, true);
       },
       () => (finished = true)
@@ -155,22 +180,22 @@ describe("runTest()", () => {
   });
 
   it("passes trial results to completion handler", () => {
-    let results = null;
+    let results: Result[] = [];
     test(
-      (startButton, trials, continueButton, timeStamp) => {
+      (startButton, trials, _continueButton, timeStamp) => {
         timeStamp.setNowMilliseconds(2);
         startButton.onClick();
         timeStamp.setNowMilliseconds(7);
-        trials.onNextCompletion({ selectedImageId: "a" });
+        trials.onNextCompletion({ selectedImageUrl: "a", videoUrl: "b" });
         timeStamp.setNowMilliseconds(23);
-        trials.onNextCompletion({ selectedImageId: "g" });
+        trials.onNextCompletion({ selectedImageUrl: "g", videoUrl: "h" });
         timeStamp.setNowMilliseconds(67);
         trials.hasCompleted = true;
-        trials.onNextCompletion({ selectedImageId: "e" });
+        trials.onNextCompletion({ selectedImageUrl: "e", videoUrl: "f" });
         assertEqualTrialResults(results, [
-          { selectedImageId: "a", elapsedTimeMilliseconds: 7 - 2 },
-          { selectedImageId: "g", elapsedTimeMilliseconds: 23 - 2 },
-          { selectedImageId: "e", elapsedTimeMilliseconds: 67 - 2 },
+          { selectedImageUrl: "a", videoUrl: "b", elapsedTimeMilliseconds: 7 - 2 },
+          { selectedImageUrl: "g", videoUrl: "h", elapsedTimeMilliseconds: 23 - 2 },
+          { selectedImageUrl: "e", videoUrl: "f", elapsedTimeMilliseconds: 67 - 2 },
         ]);
       },
       (r) => (results = r)
