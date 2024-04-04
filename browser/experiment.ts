@@ -282,7 +282,13 @@ function lowerRightButton(text: string) {
 
 declare const jatos: any;
 
-export function run(failureCriterion: (result: Result, trialNumber: number) => boolean = () => false) {
+export function run({
+  failureCriterion = () => false,
+  onFinished = (results) => jatos.endStudy(results)
+}: {
+  failureCriterion?: (result: Result, trialNumber: number) => boolean,
+  onFinished?: (results: Result[]) => void
+}) {
   const barContainingElement = document.createElement("div");
   barContainingElement.style.width = percentString(75);
   barContainingElement.style.height = percentString(5);
@@ -367,7 +373,7 @@ export function run(failureCriterion: (result: Result, trialNumber: number) => b
               ),
               new SimpleButton(continueButtonElement),
               new PerformanceTimeStamp(),
-              (results) => jatos.endStudy(results)
+              onFinished
             )
         );
       });
