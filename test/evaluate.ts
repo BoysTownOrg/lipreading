@@ -1,5 +1,5 @@
 import assert from "assert";
-import * as evaluate from "../evaluate.ts"
+import * as evaluate from "../evaluate"
 
 describe("evaluate trial", () => {
   it("considers file names", () => {

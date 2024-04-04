@@ -1,5 +1,5 @@
 import assert from "assert";
-import { runTest, Button, Result, Trials, TimeStamp } from "../run-test.ts";
+import { runTest, Button, Result, Trials, TimeStamp } from "../run-test";
 
 class ButtonStub implements Button {
   shown: boolean;

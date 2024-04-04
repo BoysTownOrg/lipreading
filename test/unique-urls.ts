@@ -1,5 +1,5 @@
 import assert from "assert";
-import { uniqueUrls } from "../unique-urls.ts";
+import { uniqueUrls } from "../unique-urls";
 
 function assertEqualArrays(actual: string[], expected: string[]) {
   assert.equal(actual.length, expected.length);

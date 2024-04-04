@@ -1,5 +1,5 @@
 import assert from "assert";
-import { runTrial, Video, Images, CompletionHandler } from "../run-trial.ts";
+import { runTrial, Video, Images, CompletionHandler } from "../run-trial";
 
 class VideoStub implements Video {
   played: boolean;

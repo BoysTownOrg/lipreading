@@ -1,8 +1,8 @@
-import { parseTrials, Trial } from "../parse-trials.ts";
-import { preloadStimuli, ProgressBar, Stimuli } from "../preload-stimuli.ts";
-import { Button, Result, runTest, TimeStamp, Trials } from "../run-test.ts";
-import { CompletionHandler, Images, runTrial, Video } from "../run-trial.ts";
-import { uniqueUrls } from "../unique-urls.ts";
+import { parseTrials, Trial } from "../parse-trials";
+import { preloadStimuli, ProgressBar, Stimuli } from "../preload-stimuli";
+import { Button, Result, runTest, TimeStamp, Trials } from "../run-test";
+import { CompletionHandler, Images, runTrial, Video } from "../run-trial";
+import { uniqueUrls } from "../unique-urls";
 
 function hideElement(element: HTMLElement) {
   element.style.visibility = "hidden";

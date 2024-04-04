@@ -1,5 +1,5 @@
 import assert from "assert";
-import { parseTrials, Trial } from "../parse-trials.ts";
+import { parseTrials, Trial } from "../parse-trials";
 
 function assertEqualTrial(actual: Trial, expected: Trial) {
   assert.equal(actual.url.image.topLeft, expected.url.image.topLeft);

@@ -1,5 +1,5 @@
 import assert from "assert";
-import { preloadStimuli, Stimuli, ProgressBar } from "../preload-stimuli.ts";
+import { preloadStimuli, Stimuli, ProgressBar } from "../preload-stimuli";
 
 class ResourcesStub implements Stimuli {
   urls: string[];

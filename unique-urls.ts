@@ -1,4 +1,4 @@
-import { Trial } from "./parse-trials.ts"
+import { Trial } from "./parse-trials"
 
 export function uniqueUrls(trials: Trial[]): string[] {
   const unique: Set<string> = new Set();
