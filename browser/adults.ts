@@ -37,7 +37,16 @@ class State {
     else {
       document.body.replaceChildren();
       const jsPsych = initJsPsych({
-        on_finish: () => jatos.endStudy(results)
+        on_finish: () => {
+          const data = { results, survey: jsPsych.data.get().json() };
+          const redirect = ""
+          if (redirect.length > 0) {
+            jatos.endStudyAndRedirect(redirect, data);
+          }
+          else {
+            jatos.endStudy(data);
+          }
+        }
       });
       jsPsych.run([
         {
@@ -116,7 +125,13 @@ class State {
               }
             ]
           ],
-        }]);
+        },
+        {
+          type: htmlButtonResponse,
+          choices: ['Continue'],
+          stimulus: "Thank you for taking part in this study. Please click the 'Next' button below to submit your responses and be redirected back to Prolific."
+        }
+      ]);
     }
   }
 }
