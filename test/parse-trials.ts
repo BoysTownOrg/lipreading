@@ -1,5 +1,5 @@
 import assert from "assert";
-import { parseTrials, Trial } from "../parse-trials";
+import { Presentation, parseTrials, type Trial } from "../parse-trials";
 
 function assertEqualTrial(actual: Trial, expected: Trial) {
   assert.equal(actual.url.image.topLeft, expected.url.image.topLeft);
@@ -7,7 +7,7 @@ function assertEqualTrial(actual: Trial, expected: Trial) {
   assert.equal(actual.url.image.bottomLeft, expected.url.image.bottomLeft);
   assert.equal(actual.url.image.bottomRight, expected.url.image.bottomRight);
   assert.equal(actual.url.video, expected.url.video);
-  assert.equal(actual.muted, expected.muted);
+  assert.equal(actual.presentation, expected.presentation);
 }
 
 function assertEqualTrials(actual: Trial[], expected: Trial[]) {
@@ -41,7 +41,7 @@ bone.jpg bug.jpg soap.jpg red.jpg
             },
             video: "watch.mp4",
           },
-          muted: false,
+          presentation: Presentation.AV,
         },
         {
           url: {
@@ -53,7 +53,7 @@ bone.jpg bug.jpg soap.jpg red.jpg
             },
             video: "pie.mp4",
           },
-          muted: false,
+          presentation: Presentation.AV,
         },
         {
           url: {
@@ -65,7 +65,7 @@ bone.jpg bug.jpg soap.jpg red.jpg
             },
             video: "juice.mp4",
           },
-          muted: true,
+          presentation: Presentation.VO,
         },
         {
           url: {
@@ -77,7 +77,7 @@ bone.jpg bug.jpg soap.jpg red.jpg
             },
             video: "pink.mp4",
           },
-          muted: true,
+          presentation: Presentation.VO,
         },
         {
           url: {
@@ -89,9 +89,9 @@ bone.jpg bug.jpg soap.jpg red.jpg
             },
             video: "bone.mp4",
           },
-          muted: true,
+          presentation: Presentation.VO,
         },
-      ]
+      ],
     );
   });
 });

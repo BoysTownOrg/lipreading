@@ -1,24 +1,30 @@
 interface TrialImageURL {
-  topLeft: string
-  topRight: string
-  bottomLeft: string
-  bottomRight: string
+  topLeft: string;
+  topRight: string;
+  bottomLeft: string;
+  bottomRight: string;
 }
 
 interface TrialURL {
-  image: TrialImageURL,
-  video: string
+  image: TrialImageURL;
+  video: string;
+}
+
+export enum Presentation {
+  AO,
+  VO,
+  AV,
 }
 
 export interface Trial {
-  url: TrialURL,
-  muted?: boolean,
+  url: TrialURL;
+  presentation: Presentation;
 }
 
 export function parseTrials(text: string): Trial[] {
   let readyForImages = false;
   let videoStem = "";
-  let muted = false;
+  let presentation = Presentation.AV;
   const trials: Trial[] = [];
   for (const line of text.split("\n"))
     if (readyForImages) {
@@ -33,13 +39,13 @@ export function parseTrials(text: string): Trial[] {
           },
           video: `${videoStem}`,
         },
-        muted,
+        presentation,
       });
       readyForImages = false;
     } else {
       const split = line.split(" ");
       videoStem = split[0];
-      muted = split[1] === "vo";
+      presentation = split[1] === "vo" ? Presentation.VO : Presentation.AV;
       readyForImages = true;
     }
   return trials;

@@ -1,7 +1,22 @@
-import { parseTrials, Trial } from "../parse-trials";
-import { preloadStimuli, ProgressBar, Stimuli } from "../preload-stimuli";
-import { Button, Result, runTest, TimeStamp, Trials } from "../run-test";
-import { CompletionHandler, Images, runTrial, Video } from "../run-trial";
+import { Presentation, parseTrials, type Trial } from "../parse-trials";
+import {
+  type ProgressBar,
+  preloadStimuli,
+  type Stimuli,
+} from "../preload-stimuli";
+import {
+  type Button,
+  type Result,
+  runTest,
+  type TimeStamp,
+  type Trials,
+} from "../run-test";
+import {
+  type CompletionHandler,
+  type Images,
+  runTrial,
+  type Video,
+} from "../run-trial";
 import { uniqueUrls } from "../unique-urls";
 
 function hideElement(element: HTMLElement) {
@@ -98,9 +113,13 @@ class DelayedVideo implements Video {
 
 class SimpleImages implements Images {
   imageContainers: HTMLElement[];
-  imageElementsWithUrls: { element: HTMLImageElement; url: string; }[];
+  imageElementsWithUrls: { element: HTMLImageElement; url: string }[];
 
-  constructor(imageContainers: HTMLElement[], imageElementsWithUrls: { element: HTMLImageElement, url: string }[], stimuli: InMemoryStimuli) {
+  constructor(
+    imageContainers: HTMLElement[],
+    imageElementsWithUrls: { element: HTMLImageElement; url: string }[],
+    stimuli: InMemoryStimuli,
+  ) {
     this.imageContainers = imageContainers;
     this.imageElementsWithUrls = imageElementsWithUrls;
     this.imageElementsWithUrls.forEach((imageElementWithUrl) => {
@@ -112,7 +131,8 @@ class SimpleImages implements Images {
   setOnTouch(f: (url: string) => void) {
     this.imageElementsWithUrls.forEach(
       (imageElementWithUrl) =>
-        (imageElementWithUrl.element.onclick = () => f(imageElementWithUrl.url))
+        (imageElementWithUrl.element.onclick = () =>
+          f(imageElementWithUrl.url)),
     );
   }
 
@@ -149,7 +169,7 @@ class StraightforwardTrials implements Trials {
     videoElement: HTMLVideoElement,
     stimuli: InMemoryStimuli,
     trials: Trial[],
-    failureCriterion: (result: Result, trialNumber: number) => boolean
+    failureCriterion: (result: Result, trialNumber: number) => boolean,
   ) {
     this.imageContainers = imageContainers;
     this.topLeftImage = topLeftImage;
@@ -164,19 +184,18 @@ class StraightforwardTrials implements Trials {
     this.failed = false;
     this.trialNumber = 0;
     this.videoUrl = "";
-    this.onNextCompletion = () => { };
+    this.onNextCompletion = () => {};
   }
 
   runNext() {
     const trial = this.trials.shift();
-    if (!trial)
-      return
+    if (!trial) return;
 
     this.trialNumber += 1;
 
     this.videoUrl = trial.url.video;
     this.videoElement.src = this.stimuli.objectURLs[trial.url.video];
-    this.videoElement.muted = trial.muted === undefined ? false : trial.muted;
+    this.videoElement.muted = trial.presentation === Presentation.VO;
     runTrial(
       new DelayedVideo(this.videoElement),
       new SimpleImages(
@@ -187,9 +206,9 @@ class StraightforwardTrials implements Trials {
           { element: this.bottomLeftImage, url: trial.url.image.bottomLeft },
           { element: this.bottomRightImage, url: trial.url.image.bottomRight },
         ],
-        this.stimuli
+        this.stimuli,
       ),
-      new TrialCompletionHandler(this)
+      new TrialCompletionHandler(this),
     );
   }
 
@@ -202,8 +221,8 @@ class StraightforwardTrials implements Trials {
       selectedImageUrl,
       videoUrl: this.videoUrl,
     };
-    this.failed = this.failureCriterion(result, this.trialNumber)
-    this.onNextCompletion(result)
+    this.failed = this.failureCriterion(result, this.trialNumber);
+    this.onNextCompletion(result);
   }
 
   completed() {
@@ -241,7 +260,7 @@ function centerElementAtPercentage(element: HTMLElement, x: number, y: number) {
   element.style.left = `${x}%`;
   element.style.top = `${y}%`;
   element.style.transform = `translate(${percentString(-50)}, ${percentString(
-    -50
+    -50,
   )})`;
 }
 
@@ -284,10 +303,10 @@ declare const jatos: any;
 
 export function run({
   failureCriterion = () => false,
-  onFinished = (results) => jatos.endStudy(results)
+  onFinished = (results) => jatos.endStudy(results),
 }: {
-  failureCriterion?: (result: Result, trialNumber: number) => boolean,
-  onFinished?: (results: Result[]) => void
+  failureCriterion?: (result: Result, trialNumber: number) => boolean;
+  onFinished?: (results: Result[]) => void;
 }) {
   const barContainingElement = document.createElement("div");
   barContainingElement.style.width = percentString(75);
@@ -369,12 +388,12 @@ export function run({
                 videoElement,
                 stimuli,
                 trials,
-                failureCriterion
+                failureCriterion,
               ),
               new SimpleButton(continueButtonElement),
               new PerformanceTimeStamp(),
-              onFinished
-            )
+              onFinished,
+            ),
         );
       });
   });
