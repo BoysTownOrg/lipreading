@@ -15,7 +15,12 @@ export interface CompletionHandler {
   call(imageUrl: string): void;
 }
 
-export function runTrial(video: Video, images: Images, completionHandler: CompletionHandler) {
+export function runTrial(
+  video: Video,
+  images: Images,
+  completionHandler: CompletionHandler,
+  auditoryOnly?: boolean,
+) {
   images.setOnTouch((imageId) => {
     images.hide();
     completionHandler.call(imageId);
@@ -24,6 +29,6 @@ export function runTrial(video: Video, images: Images, completionHandler: Comple
     video.hide();
     images.show();
   });
-  video.show();
+  if (!(auditoryOnly ?? false)) video.show();
   video.play();
 }

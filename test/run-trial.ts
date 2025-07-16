@@ -1,5 +1,10 @@
 import assert from "assert";
-import { runTrial, Video, Images, CompletionHandler } from "../run-trial";
+import {
+  type CompletionHandler,
+  type Images,
+  runTrial,
+  type Video,
+} from "../run-trial";
 
 class VideoStub implements Video {
   played: boolean;
@@ -11,7 +16,7 @@ class VideoStub implements Video {
     this.played = false;
     this.hidden = false;
     this.shown = false;
-    this.onFinish = () => { };
+    this.onFinish = () => {};
   }
 
   setOnFinish(f: () => void) {
@@ -39,7 +44,7 @@ class ImagesStub implements Images {
   constructor() {
     this.shown = false;
     this.hidden = false;
-    this.onTouch = () => { };
+    this.onTouch = () => {};
   }
 
   setOnTouch(f: (url: string) => void) {
@@ -70,7 +75,13 @@ class HandlerStub implements CompletionHandler {
   }
 }
 
-function test(assertion: (video: VideoStub, images: ImagesStub, completionHandler: HandlerStub) => void) {
+function test(
+  assertion: (
+    video: VideoStub,
+    images: ImagesStub,
+    completionHandler: HandlerStub,
+  ) => void,
+) {
   const video = new VideoStub();
   const images = new ImagesStub();
   const completionHandler = new HandlerStub();
@@ -83,6 +94,14 @@ describe("runTrial()", () => {
     test((video) => {
       assert.equal(video.shown, true);
     });
+  });
+
+  it("should not show the video for auditory-only", () => {
+    const video = new VideoStub();
+    const images = new ImagesStub();
+    const completionHandler = new HandlerStub();
+    runTrial(video, images, completionHandler, true);
+    assert.equal(video.shown, false);
   });
 
   it("should play the video", () => {
