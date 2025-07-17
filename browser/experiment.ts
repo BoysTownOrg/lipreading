@@ -1,4 +1,4 @@
-import { Presentation, parseTrials, type Trial } from "../parse-trials";
+import { Presentation, type Trial } from "../parse-trials";
 import {
   type ProgressBar,
   preloadStimuli,
@@ -129,11 +129,9 @@ class SimpleImages implements Images {
   }
 
   setOnTouch(f: (url: string) => void) {
-    this.imageElementsWithUrls.forEach(
-      (imageElementWithUrl) =>
-        (imageElementWithUrl.element.onclick = () =>
-          f(imageElementWithUrl.url)),
-    );
+    this.imageElementsWithUrls.forEach((imageElementWithUrl) => {
+      imageElementWithUrl.element.onclick = () => f(imageElementWithUrl.url);
+    });
   }
 
   show() {
@@ -301,13 +299,16 @@ function lowerRightButton(text: string) {
 
 declare const jatos: any;
 
-export function run({
-  failureCriterion = () => false,
-  onFinished = (results) => jatos.endStudy(results),
-}: {
-  failureCriterion?: (result: Result, trialNumber: number) => boolean;
-  onFinished?: (results: Result[]) => void;
-}) {
+export function run(
+  trials: Trial[],
+  {
+    failureCriterion = () => false,
+    onFinished = (results) => jatos.endStudy(results),
+  }: {
+    failureCriterion?: (result: Result, trialNumber: number) => boolean;
+    onFinished?: (results: Result[]) => void;
+  },
+) {
   const barContainingElement = document.createElement("div");
   barContainingElement.style.width = percentString(75);
   barContainingElement.style.height = percentString(5);
@@ -363,38 +364,33 @@ export function run({
 
   const stimuli = new InMemoryStimuli();
   jatos.onLoad(() => {
-    fetch("trials.txt")
-      .then((p) => p.text())
-      .then((text) => {
-        const trials = parseTrials(text);
-        preloadStimuli(
-          stimuli,
-          new UglyProgressBar(barContainingElement, barElement),
-          uniqueUrls(trials),
-          () =>
-            runTest(
-              new SimpleButton(startButtonElement),
-              new StraightforwardTrials(
-                [
-                  topLeftQuadrant,
-                  topRightQuadrant,
-                  bottomLeftQuadrant,
-                  bottomRightQuadrant,
-                ],
-                topLeftImage,
-                topRightImage,
-                bottomLeftImage,
-                bottomRightImage,
-                videoElement,
-                stimuli,
-                trials,
-                failureCriterion,
-              ),
-              new SimpleButton(continueButtonElement),
-              new PerformanceTimeStamp(),
-              onFinished,
-            ),
-        );
-      });
+    preloadStimuli(
+      stimuli,
+      new UglyProgressBar(barContainingElement, barElement),
+      uniqueUrls(trials),
+      () =>
+        runTest(
+          new SimpleButton(startButtonElement),
+          new StraightforwardTrials(
+            [
+              topLeftQuadrant,
+              topRightQuadrant,
+              bottomLeftQuadrant,
+              bottomRightQuadrant,
+            ],
+            topLeftImage,
+            topRightImage,
+            bottomLeftImage,
+            bottomRightImage,
+            videoElement,
+            stimuli,
+            trials,
+            failureCriterion,
+          ),
+          new SimpleButton(continueButtonElement),
+          new PerformanceTimeStamp(),
+          onFinished,
+        ),
+    );
   });
 }
