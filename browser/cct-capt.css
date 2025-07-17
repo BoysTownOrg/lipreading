@@ -1,0 +1,8 @@
+label,
+select {
+  display: table-cell;
+}
+
+p {
+  display: table-row;
+}
