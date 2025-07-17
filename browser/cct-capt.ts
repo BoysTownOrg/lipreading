@@ -52,7 +52,8 @@ async function run() {
     });
   });
   form.remove();
-  experiment.run({});
+  const trials = [];
+  experiment.run(trials, {});
 }
 
 main();
