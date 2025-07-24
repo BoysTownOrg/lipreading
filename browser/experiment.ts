@@ -207,6 +207,7 @@ class StraightforwardTrials implements Trials {
         this.stimuli,
       ),
       new TrialCompletionHandler(this),
+      trial.presentation === Presentation.AO,
     );
   }
 
