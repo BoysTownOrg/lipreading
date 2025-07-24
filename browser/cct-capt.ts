@@ -72,7 +72,10 @@ async function fetchTrials(settings: Settings): Promise<Trial[]> {
             bottomLeft: imageNames[2],
             bottomRight: imageNames[3],
           },
-          video: `${settings.videoFilePrefix}${videoFileSuffix}`,
+          video: `${settings.videoFilePrefix}${videoFileSuffix}`.replace(
+            /mp4$/,
+            "mov",
+          ),
         },
         presentation: settings.presentation,
       };
