@@ -103,6 +103,8 @@ async function run() {
   const conditionSelect = document.getElementById("condition");
   if (!conditionSelect)
     throw new Error("BUG: condition select element not found");
+  const snrSelect = document.getElementById("snr");
+  if (!snrSelect) throw new Error("BUG: snr select element not found");
   const settings = await new Promise<Settings>((resolve) => {
     form.addEventListener("submit", (event) => {
       event.preventDefault();
@@ -131,9 +133,20 @@ async function run() {
         default:
           return false;
       }
+      let noisePrefix: string | null = null;
+      switch ((snrSelect as HTMLSelectElement).value) {
+          case "noise":
+              noisePrefix = "noise-";
+              break;
+          case "quiet":
+              noisePrefix = "";
+              break;
+          default:
+              return false;
+      }
       resolve({
         url: `${stimulusSet}_order${order}.csv`,
-        videoFilePrefix: `${stimulusSet}-`,
+        videoFilePrefix: `${stimulusSet}-${noisePrefix}`,
         imageNamesByGroup,
         presentation,
       });
