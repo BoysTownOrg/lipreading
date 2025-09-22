@@ -305,9 +305,11 @@ export function run(
   {
     failureCriterion = () => false,
     onFinished = (results) => jatos.endStudy(results),
+    cropVideo = false,
   }: {
     failureCriterion?: (result: Result, trialNumber: number) => boolean;
     onFinished?: (results: Result[]) => void;
+    cropVideo?: boolean;
   },
 ) {
   const barContainingElement = document.createElement("div");
@@ -347,6 +349,11 @@ export function run(
   const videoElement = document.createElement("video");
   videoElement.style.width = percentString(75);
   videoElement.style.height = percentString(75);
+  if (cropVideo) {
+    videoElement.style.width = "900px";
+    videoElement.style.height = "540px";
+    videoElement.style.objectFit = "cover";
+  }
   fixElementPosition(videoElement);
   centerElementAtPercentage(videoElement, 50, 50);
   hideElement(videoElement);

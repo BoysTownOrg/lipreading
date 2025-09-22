@@ -135,14 +135,14 @@ async function run() {
       }
       let noisePrefix: string | null = null;
       switch ((snrSelect as HTMLSelectElement).value) {
-          case "noise":
-              noisePrefix = "noise-";
-              break;
-          case "quiet":
-              noisePrefix = "";
-              break;
-          default:
-              return false;
+        case "noise":
+          noisePrefix = "noise-";
+          break;
+        case "quiet":
+          noisePrefix = "";
+          break;
+        default:
+          return false;
       }
       resolve({
         url: `${stimulusSet}_order${order}.csv`,
@@ -154,7 +154,7 @@ async function run() {
   });
   form.remove();
   const trials = await fetchTrials(settings);
-  experiment.run(trials, {});
+  experiment.run(trials, { cropVideo: true });
 }
 
 main();
